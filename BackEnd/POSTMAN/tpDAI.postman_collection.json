@@ -1,0 +1,454 @@
+{
+	"info": {
+		"_postman_id": "5c4aa1e4-98a8-4e99-b454-f8b91edb0ce5",
+		"name": "tpDAI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28245268"
+	},
+	"item": [
+		{
+			"name": "GET allVecino",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/vecinos/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"vecinos",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET vecino",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "$2b$10$PXKmPLQNG/LGEqJYXdX/Qu",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/vecinos/get/DNI100000000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"vecinos",
+						"get",
+						"DNI100000000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST vecino",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"documento\": \"DNI100000006\",\r\n    \"nombre\": \"FEDERICO\",\r\n    \"apellido\": \"RICARDO\",\r\n    \"direccion\": \"Juncal\",\r\n    \"codigoBarrio\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/vecinos/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"vecinos",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT vecino",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "$2b$10$PXKmPLQNG/LGEqJYXdX/Qu",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"documento\": \"DNI10000005\",\r\n    \"nombre\": \"YA\",\r\n    \"apellido\": \"YO\",\r\n    \"direccion\": \"123\",\r\n    \"codigoBarrio\": 4\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/vecinos/update/DNI100000005",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"vecinos",
+						"update",
+						"DNI100000005"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE vecino",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "$2b$10$PXKmPLQNG/LGEqJYXdX/Qu",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/vecinos/delete/DNI100000001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"vecinos",
+						"delete",
+						"DNI100000001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET allPersonal",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/usuarios/personal/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"personal",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET personal",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/usuarios/personal/get/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"personal",
+						"get",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET allReclamos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reclamos/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET reclamo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reclamos/get/8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"get",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET reclamoBySitio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reclamos/getBySitio/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"getBySitio",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET reclamoByVecino",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reclamos/getByVecino/DNI100000000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"getByVecino",
+						"DNI100000000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET reclamosByPersonal",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reclamos/getByPersonal/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"getByPersonal",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST relcamo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"documento\": \"DNI100000000\",\r\n    \"idSitio\": 1,\r\n    \"idDesperfecto\": 2,\r\n    \"descripcion\": \"Descripción del reclamo\",\r\n    \"estado\": \"pendiente\",\r\n    //\"idReclamoUnificado\": ,  // Este campo es opcional\r\n    \"legajo\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/reclamos/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET servicio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/servicios/get/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"servicios",
+						"get",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET allServicio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/servicios/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"servicios",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET allDenuncias",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/denuncias/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"denuncias",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET denunciaBySitio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/denuncias/getBySitio/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"denuncias",
+						"getBySitio",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
