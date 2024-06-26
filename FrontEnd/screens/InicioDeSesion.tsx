@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Pressable, TextInput, Alert } from "react-native";
+import { StyleSheet, View, Text, Pressable, TextInput, Alert, TouchableOpacity  } from "react-native";
 import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
@@ -15,6 +15,12 @@ const InicioDeSesion = () => {
   const [apellido, setApellido] = useState('');
   const [vecino, setVecino] = useState(false);
   const [personal, setPersonal] = useState(false);
+
+  const [contraseñaVisible, setContraseñaVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setContraseñaVisible(!contraseñaVisible);
+  };
 
   // Función para iniciar sesión
   const login = async () => {
@@ -34,11 +40,14 @@ const InicioDeSesion = () => {
   
       if (response.ok) {
         const datosUsuario_Vecino = await fetch(`http://192.168.1.8:5000/usuarios/vecinos/get/` + documento);
+        //console.log("ERROR VECINO")
         if (!datosUsuario_Vecino.ok) {
+          //console.log("ERROR PERSONAL")
           const datosUsuario_Personal = await fetch(`http://192.168.1.8:5000/usuarios/personal/get/` + documento);
           if (!datosUsuario_Personal.ok) {
             //console.log("Personal --> NULL")
           } else {
+            //console.log("Personal --> NOOO NULL")
             const datosUsuario_Personal_json = await datosUsuario_Personal.json();
             setNombre(datosUsuario_Personal_json.nombre);
             setApellido(datosUsuario_Personal_json.apellido);
@@ -46,6 +55,7 @@ const InicioDeSesion = () => {
             setPersonal(true);
   
             navigation.navigate('MenuPrincipal_Personal', {
+              documentoUsuario: datosUsuario_Personal_json.legajo,
               nombre: datosUsuario_Personal_json.nombre.trim(),
               apellido: datosUsuario_Personal_json.apellido,
               vecino: false,
@@ -67,6 +77,7 @@ const InicioDeSesion = () => {
                 text: "OK",
                 onPress: () => {
                   navigation.navigate('MenuPrincipal_Vecino', {
+                    documentoUsuario: datosUsuario_Vecino_json.documento.trim(),
                     nombre: datosUsuario_Vecino_json.nombre,
                     apellido: datosUsuario_Vecino_json.apellido,
                     vecino: true,
@@ -130,16 +141,17 @@ const InicioDeSesion = () => {
                   <TextInput
                     style={[styles.placeholder, styles.textTypo]}
                     placeholder="Contraseña"
-                    secureTextEntry
+                    secureTextEntry = {!contraseñaVisible}
                     value={password}
                     onChangeText={setContrasena}
                   />
                 </View>
-                <Image
-                  style={styles.eyeIcon3}
-                  contentFit="cover"
-                  source={require("../assets/eye2.png")}
-                />
+                <TouchableOpacity onPress={togglePasswordVisibility}>
+                  <Image
+                    style={styles.eyeIcon3}
+                    source={require("../assets/eye2.png")}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>

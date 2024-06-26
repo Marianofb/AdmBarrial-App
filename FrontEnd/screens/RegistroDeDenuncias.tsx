@@ -8,6 +8,7 @@ import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
 
 type RouteParams = {
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -21,7 +22,7 @@ const RegistroDedenuncias = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>();
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "" , nombre: '', apellido: '', vecino: false , personal: false};
 
   const [documento, setDocumento] = useState('');
   const [idSitio, setIdSitio] = useState("");

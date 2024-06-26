@@ -6,6 +6,7 @@ import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navig
 import { Color, Border, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
 type RouteParams = {
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -51,20 +52,31 @@ const ConsultaDeDenuncia = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>();
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   const handlePress = () => {
     if (vecino) {
-      navigation.navigate("MenuPrincipal_Vecino", { nombre, apellido, vecino, personal });
+      navigation.navigate("MenuPrincipal_Vecino", { documentoUsuario, nombre, apellido, vecino, personal });
     } else if (personal) {
-      navigation.navigate("MenuPrincipal_Personal", { nombre, apellido, vecino, personal });
+      navigation.navigate("MenuPrincipal_Personal", { documentoUsuario, nombre, apellido, vecino, personal });
     } 
   };
 
+  //console.log("DOCUMENTO DE USUARIO: ", documentoUsuario.trim())
+
   const denunciasFiltradas = denuncias.filter(denuncia => {
-    if (documento.trim() === "") {
+    if(vecino)
+    {
+      //console.log("PROBANDO: ", denuncia.documento === documentoUsuario.trim())
+      //console.log("documentoDenuncia: ", denuncia.documento, " / documentoUsuario: " , documentoUsuario.trim())
+      return denuncia.documento === documentoUsuario.trim();
+    }
+    else if (documento.trim() === "") 
+    {
       return true; 
-    } else {
+    } 
+    else 
+    {
       return denuncia.documento === documento.trim();
     }
   });
@@ -73,6 +85,7 @@ const ConsultaDeDenuncia = () => {
     <View style={[styles.bsquedaDeServicio, styles.cardLayout]}>
       <Text style={styles.buscarServicios}>Buscar Denuncia</Text>
       
+      {!vecino && (
       <View style={[styles.groupParent, styles.groupLayout]}>
         <View style={styles.inputsBorder}>
           <View style={styles.eyeParent}>
@@ -90,7 +103,8 @@ const ConsultaDeDenuncia = () => {
             </View>
         </View>
       </View>
-
+       )}
+       
       <View style={styles.inputsParent}>
         <View style={[styles.inputs, styles.inputsBorder  ]}>
         <ScrollView>
@@ -120,7 +134,7 @@ const ConsultaDeDenuncia = () => {
       </Pressable>
 
       <Pressable
-       onPress={() => navigation.navigate("RegistroDeDenuncias", { nombre, apellido, vecino, personal })}
+       onPress={() => navigation.navigate("RegistroDeDenuncias", { documentoUsuario, nombre, apellido, vecino, personal })}
       >
         <Image
           style={styles.addIcon}
