@@ -33,5 +33,5 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()  # Crea todas las tablas en la base de datos, si no están creadas
 
-    # Ejecuta la aplicación
-    app.run(debug=True)
+    # Ejecuta la aplicación en todas las interfaces de red
+    app.run(host='0.0.0.0', port=5000, debug=True)

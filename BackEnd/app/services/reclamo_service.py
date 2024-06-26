@@ -18,8 +18,8 @@ from models import Reclamo
 class ReclamoService:
     def get_all_reclamos():
         reclamos = Reclamo.query.all()
-        json_reclamos = list(map(lambda x: x.to_json(), reclamos))
-        return jsonify({"reclamos": json_reclamos})
+        json_reclamos = [reclamo.to_json() for reclamo in reclamos]
+        return jsonify(json_reclamos)
 
     @staticmethod
     def get_reclamo_by_id(id):
@@ -53,7 +53,6 @@ class ReclamoService:
             descripcion=data['descripcion'],
             estado=data['estado'],
             idReclamoUnificado=data.get('idReclamoUnificado'),
-            legajo=data['legajo']
         )
         db.session.add(new_reclamo)
         db.session.commit()

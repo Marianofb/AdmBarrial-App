@@ -20,8 +20,8 @@ class ServicioService:
     @staticmethod
     def get_all_servicios():
         servicios = Servicio.query.all()
-        json_servicios = list(map(lambda x: x.to_json(), servicios))
-        return jsonify({"servicios": json_servicios})
+        json_servicios = [servicio.to_json() for servicio in servicios]
+        return jsonify(json_servicios)
 
     @staticmethod
     def get_servicio_by_id(id):

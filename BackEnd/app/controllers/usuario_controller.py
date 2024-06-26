@@ -1,3 +1,5 @@
+from flask import jsonify
+
 import sys
 from os.path import dirname, abspath
 
@@ -10,8 +12,20 @@ app_dir = dirname(current_dir)
 # Añadir 'app' al sys.path
 sys.path.append(app_dir)
 
-from services import VecinoService, PersonalService
+from services import UsuarioService, VecinoService, PersonalService
 
+class UsuarioController:
+
+    @staticmethod
+    def login():
+        if UsuarioService.loginVecino() == True:
+            return jsonify({'exito': 'Iniciamos Sesion'}), 200
+        
+        if UsuarioService.loginPersonal() == True:
+            return jsonify({'exito': 'Iniciamos Sesion'}), 200
+
+        return jsonify({'BackEnd error': 'Documento y contraseña son requeridos'}), 400
+    
 #---------------------------VECINO---------------------------------#
 class VecinoController:
     @staticmethod

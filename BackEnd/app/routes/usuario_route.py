@@ -12,13 +12,18 @@ app_dir = dirname(current_dir)
 # Añadir 'app' al sys.path
 sys.path.append(app_dir)
 
-from controllers import VecinoController, PersonalController
+from controllers import UsuarioController, VecinoController, PersonalController
 
 usuarios_bp = Blueprint('usuarios', __name__)
 
 @usuarios_bp.route('/bienvenido')
 def hello():
     return "Bienvenido a la Tabla de Usuarios"
+
+
+@usuarios_bp.route('/login', methods =["POST"])
+def login():
+    return UsuarioController.login()
 
 #---------------------------VECINO---------------------------------#
 

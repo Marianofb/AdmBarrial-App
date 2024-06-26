@@ -5,6 +5,7 @@ import {
   Text,
   View,
   ImageSourcePropType,
+  TextInput,
 } from "react-native";
 import { FontSize, FontFamily, Color, Border, Padding } from "../GlobalStyles";
 
@@ -13,21 +14,26 @@ export type InputsType = {
   placeholder?: string;
   eye1?: ImageSourcePropType;
   showEyeIcon?: boolean;
-
-  /** Style props */
   propMarginTop?: number | string;
+
+  /** New Props for handling input */
+  value?: string;
+  onChangeText?: (text: string) => void;
 };
 
 const getStyleValue = (key: string, value: string | number | undefined) => {
   if (value === undefined) return;
   return { [key]: value === "unset" ? undefined : value };
 };
+
 const Inputs = ({
   eye,
   placeholder,
   eye1,
   showEyeIcon,
   propMarginTop,
+  value,
+  onChangeText,
 }: InputsType) => {
   const inputsStyle = useMemo(() => {
     return {
@@ -39,7 +45,12 @@ const Inputs = ({
     <View style={[styles.inputs, inputsStyle]}>
       <View style={styles.eyeParent}>
         <Image style={styles.eyeIconLayout} resizeMode="cover" source={eye} />
-        <Text style={styles.placeholder}>{placeholder}</Text>
+        <TextInput
+          style={styles.placeholder}
+          placeholder={placeholder}
+          value={value}
+          onChangeText={onChangeText}
+        />
       </View>
       {showEyeIcon && (
         <Image
@@ -59,6 +70,7 @@ const styles = StyleSheet.create({
     width: 24,
   },
   placeholder: {
+    flex: 1,
     fontSize: FontSize.bodyMediumRegular_size,
     letterSpacing: 0,
     lineHeight: 21,
@@ -68,7 +80,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   eyeParent: {
-    width: 263,
+    flex: 1,
     alignItems: "center",
     flexDirection: "row",
   },

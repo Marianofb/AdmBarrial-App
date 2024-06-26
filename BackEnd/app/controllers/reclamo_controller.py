@@ -51,11 +51,11 @@ class ReclamoController:
 
     @staticmethod
     def create_reclamo(data):
-        new_reclamo = ReclamoService.create_reclamo(data)
-        if new_reclamo:
+        try:
+            new_reclamo = ReclamoService.create_reclamo(data)
             return new_reclamo, 201
-        
-        return "error: No se ha encontrado un usuario que corresponda", 404
+        except Exception as e:
+            return "error: No se ha encontrado un usuario que corresponda", 404
     
     @staticmethod
     def update_reclamo(id, data):

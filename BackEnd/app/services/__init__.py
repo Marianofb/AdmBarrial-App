@@ -13,6 +13,6 @@ sys.path.append(app_dir)
 from services.denuncia_service import DenunciaService
 from services.reclamo_service import ReclamoService
 from services.servicio_service import ServicioService
-from services.usuario_service import VecinoService, PersonalService
+from services.usuario_service import UsuarioService, VecinoService, PersonalService
 
 #print("Funciona Service")

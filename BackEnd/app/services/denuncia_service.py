@@ -8,14 +8,15 @@ class DenunciaService:
     @staticmethod
     def get_all_denuncias():
         denuncias = Denuncia.query.all()
-        json_denuncias = list(map(lambda x: x.to_json(), denuncias))
-        return jsonify({"denuncias": json_denuncias})
+        json_denuncias = [denuncia.to_json() for denuncia in denuncias]
+        return jsonify(json_denuncias)
 
     @staticmethod
     def get_denuncia_by_id(id):
         denuncia = Denuncia.query.get(id)
+        denuncia_json = denuncia.to_json()
         if denuncia:
-            return jsonify(denuncia.to_json())
+            return jsonify(denuncia_json)
         else:
             return jsonify({"error": "Denuncia no encontrada"}), 404
         
@@ -38,11 +39,11 @@ class DenunciaService:
             idSitio=data['idSitio'],
             descripcion=data['descripcion'],
             estado=data['estado'],
-            aceptaResponsabilidad=data['aceptaResponsabilidad']
+            aceptaResponsabilidad= 1
         )
         db.session.add(new_denuncia)
         db.session.commit()
-        return jsonify(new_denuncia.to_json()), 201
+        return jsonify(new_denuncia.to_json())
 
     @staticmethod
     def update_denuncia(id, data):

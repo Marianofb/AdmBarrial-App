@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 
 import sys
 from os.path import dirname, abspath
@@ -14,6 +14,61 @@ sys.path.append(app_dir)
 
 from config import db
 from models import Vecino, Personal
+
+class UsuarioService:
+
+    @staticmethod
+    def loginVecino():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+
+            if not documento:
+                #return jsonify({'error': 'Documento y contraseña son requeridos'}), 400
+                return False
+
+            # Si no se encontró en Personal, intentar con Vecino
+            usuario_vecino = Vecino.query.filter_by(documento=documento).first()
+            if usuario_vecino:
+                # Autenticación exitosa
+                #return jsonify({'message': 'Autenticación exitosa para vecino'}), 200
+                return True
+
+            # Si ninguno coincide
+            #return jsonify({'error': 'Documento o contraseña incorrectos'}), 401
+            return False
+
+        except Exception as e:
+            #return jsonify({'error': str(e)}), 500
+            return False
+    @staticmethod        
+    def loginPersonal():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+            password = data.get('password')
+
+            if not documento or not password:
+                return False
+
+            # Busca al usuario en la base de datos por el legajo (documento)
+            usuario_personal = Personal.query.filter_by(legajo=documento).first()
+
+            if usuario_personal:
+                # Verifica la contraseña
+                if usuario_personal.password == password:
+                    # Contraseña correcta, autenticación exitosa
+                    return True
+                else:
+                    # Contraseña incorrecta
+                    return False
+
+            # Si no se encontró en Personal
+            return False
+
+        except Exception as e:
+            return False
+
 
 #---------------------------VECINO---------------------------------#
 

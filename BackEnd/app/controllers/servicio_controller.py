@@ -28,10 +28,10 @@ class ServicioController:
     @staticmethod
     def create_servicio(data):
         try:
-            nuevo_servicio = ServicioService.create_vecino(data)
+            nuevo_servicio = ServicioService.create_servicio(data)
             return nuevo_servicio, 201
         except Exception as e:
-            return {"error": str(e)}, 400
+            return {"error en la creacion del nuevo servicio": str(e)}, 400
     
     @staticmethod
     def update_servicio(id, data):
