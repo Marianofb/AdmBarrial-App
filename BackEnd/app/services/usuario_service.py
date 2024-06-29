@@ -91,12 +91,12 @@ class VecinoService:
     def enviar_sms(nueva_contraseña, celular):
         try:
             # Configurar credenciales de Twilio
-            account_sid = "ACf1fb365402f6e25b11e1d259173a97d1"  # Reemplazar con tu Account SID de Twilio
-            auth_token = "f77c85664eee44ddb13593f97fbcc267"  # Reemplazar con tu Auth Token de Twilio
-            twilio_phone_number = +17752640959  # Reemplazar con tu número de Twilio
+            #account_sid = "ACf1fb365402f6e25b11e1d259173a97d1"  # Reemplazar con tu Account SID de Twilio
+            #auth_token = "f77c85664eee44ddb13593f97fbcc267"  # Reemplazar con tu Auth Token de Twilio
+            #twilio_phone_number = +17752640959  # Reemplazar con tu número de Twilio
 
             # Inicializar cliente de Twilio
-            client = Client(account_sid, auth_token)
+            #client = Client(account_sid, auth_token)
             
             # Enviar mensaje SMS
             message = client.messages.create(
