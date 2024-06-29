@@ -29,6 +29,20 @@ class UsuarioController:
 #---------------------------VECINO---------------------------------#
 class VecinoController:
     @staticmethod
+    def generar_clave_acceso():
+        if VecinoService.generar_clave_acceso() == True:
+            return jsonify({'exito': 'Generacion de Clave Exitosa'}), 200
+        
+        return jsonify({'error': 'Al Generar de Clave'}), 400 
+    
+    @staticmethod
+    def cambiar_clave_acceso():
+        if VecinoService.cambiar_clave_acceso() == True:
+            return jsonify({'exito': 'Cambio de Clave Exitosa'}), 200
+        
+        return jsonify({'error': 'Al Cambiar la Clave'}), 400 
+
+    @staticmethod
     def get_all_vecino():
         return VecinoService.get_all_vecino()
     

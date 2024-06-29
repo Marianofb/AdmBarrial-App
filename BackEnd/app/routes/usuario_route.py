@@ -27,6 +27,14 @@ def login():
 
 #---------------------------VECINO---------------------------------#
 
+@usuarios_bp.route('vecinos/generarClave', methods =["POST"])
+def generar_clave_acceso():
+    return VecinoController.generar_clave_acceso()
+
+@usuarios_bp.route('vecinos/cambiarClave', methods =["POST"])
+def cambiar_clave_acceso():
+    return VecinoController.cambiar_clave_acceso()
+
 @usuarios_bp.route('vecinos/getAll', methods =["GET"])
 def get_vecinos():
     return VecinoController.get_all_vecino()

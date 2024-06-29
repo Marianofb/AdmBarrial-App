@@ -57,6 +57,8 @@ class Vecino(db.Model):
     codigoBarrio = db.Column(db.Integer, db.ForeignKey('barrios.idBarrio'), nullable=False)
     denuncias = db.relationship('Denuncia', backref='vecino', lazy=True)
     reclamos = db.relationship('Reclamo', backref='vecino', lazy=True)
+    contraseña = db.Column(db.String(80), nullable=False)
+    celular = db.Column(db.String(80), nullable=False)
 
     def __repr__(self):
         return f'<Vecino documento={self.documento} nombre={self.nombre} apellido={self.apellido}>'
@@ -67,7 +69,7 @@ class Vecino(db.Model):
             'nombre': self.nombre,
             'apellido': self.apellido,
             'direccion': self.direccion,
-            'codigoBarrio': self.codigoBarrio
+            'codigoBarrio': self.codigoBarrio,
         }
 
 class Denuncia(db.Model):

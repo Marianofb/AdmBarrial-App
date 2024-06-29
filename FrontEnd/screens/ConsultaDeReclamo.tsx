@@ -6,6 +6,7 @@ import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navig
 import { Color, Border, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
 type RouteParams = {
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -31,7 +32,7 @@ const ConsultaDeReclamo = () => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://192.168.1.8:5000/reclamos/getAll');
+        const response = await fetch('http://192.168.1.17:5000/reclamos/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -52,13 +53,13 @@ const ConsultaDeReclamo = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>();
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || {documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   const handlePress = () => {
     if (vecino) {
-      navigation.navigate("MenuPrincipal_Vecino", { nombre, apellido, vecino, personal });
+      navigation.navigate("MenuPrincipal_Vecino", {documentoUsuario, nombre, apellido, vecino, personal });
     } else if (personal) {
-      navigation.navigate("MenuPrincipal_Personal", { nombre, apellido, vecino, personal });
+      navigation.navigate("MenuPrincipal_Personal", { documentoUsuario, nombre, apellido, vecino, personal });
     } 
   };
 

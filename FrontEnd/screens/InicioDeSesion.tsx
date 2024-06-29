@@ -10,7 +10,7 @@ const InicioDeSesion = () => {
 
   // Declarar estados para los campos de entrada
   const [documento, setDocumento] = useState('');
-  const [password, setContrasena] = useState('');
+  const [contraseña, setContrasena] = useState('');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [vecino, setVecino] = useState(false);
@@ -25,25 +25,25 @@ const InicioDeSesion = () => {
   // Función para iniciar sesión
   const login = async () => {
     try {
-      const response = await fetch('http://192.168.1.8:5000/usuarios/login', {
+      const response = await fetch('http://192.168.1.17:5000/usuarios/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           documento: documento,
-          password: password,
+          contraseña: contraseña,
         }),
       });
   
       const data = await response.json();
   
       if (response.ok) {
-        const datosUsuario_Vecino = await fetch(`http://192.168.1.8:5000/usuarios/vecinos/get/` + documento);
+        const datosUsuario_Vecino = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/` + documento);
         //console.log("ERROR VECINO")
         if (!datosUsuario_Vecino.ok) {
           //console.log("ERROR PERSONAL")
-          const datosUsuario_Personal = await fetch(`http://192.168.1.8:5000/usuarios/personal/get/` + documento);
+          const datosUsuario_Personal = await fetch(`http://192.168.1.17:5000/usuarios/personal/get/` + documento);
           if (!datosUsuario_Personal.ok) {
             //console.log("Personal --> NULL")
           } else {
@@ -68,30 +68,18 @@ const InicioDeSesion = () => {
           setApellido(datosUsuario_Vecino_json.apellido);
           setVecino(true);
           setPersonal(false);
-  
-          Alert.alert(
-            "Solicitud Aceptada",
-            "Su solicitud de ingreso ha sido aceptada. Le enviamos un mail con la clave correspondiente para ingresar a la app.",
-            [
-              {
-                text: "OK",
-                onPress: () => {
-                  navigation.navigate('MenuPrincipal_Vecino', {
-                    documentoUsuario: datosUsuario_Vecino_json.documento.trim(),
-                    nombre: datosUsuario_Vecino_json.nombre,
-                    apellido: datosUsuario_Vecino_json.apellido,
-                    vecino: true,
-                    personal: false,
-                  });
-                }
-              }
-            ],
-            { cancelable: false }
-          );
+
+          navigation.navigate('MenuPrincipal_Vecino', {
+              documentoUsuario: datosUsuario_Vecino_json.documento.trim(),
+              nombre: datosUsuario_Vecino_json.nombre,
+              apellido: datosUsuario_Vecino_json.apellido,
+              vecino: true,
+              personal: false,
+            });
+          }
+              
         }
-      } else {
-        alert('ERROR: Ingresar Documento y Contraseña');
-      }
+        
     } catch (error) {
       alert('ERROR');
     }
@@ -102,10 +90,6 @@ const InicioDeSesion = () => {
     <View style={styles.inicioDeSesin}>
 
       <Text style={[styles.title, styles.titleFlexBox]}>Iniciar sesión</Text>
-
-      <View style={[styles.ios1, styles.iosPosition]}>
-        <View style={[styles.homeIndicator, styles.sesinPosition]} />
-      </View>
       
       <View style={[styles.inicioDeSesinInner, styles.sesinPosition]}>
         <View>
@@ -142,7 +126,7 @@ const InicioDeSesion = () => {
                     style={[styles.placeholder, styles.textTypo]}
                     placeholder="Contraseña"
                     secureTextEntry = {!contraseñaVisible}
-                    value={password}
+                    value={contraseña}
                     onChangeText={setContrasena}
                   />
                 </View>
@@ -157,7 +141,7 @@ const InicioDeSesion = () => {
           </View>
         </View>
       </View>
-      
+    
       <Pressable
         style={styles.inputs2}
         onPress={login}
@@ -176,13 +160,45 @@ const InicioDeSesion = () => {
           <Text style={[styles.cta, styles.ctaTypo]}>Ingresar Como Visitante</Text>
         </View>
       </Pressable>
+
+
+      <Pressable
+        style={[styles.cambiarContrasea, styles.sesinPosition]}
+        onPress={() => navigation.navigate("CambiarContraseña")}
+      >
+        <Text style={[styles.text, styles.textTypo]}>
+          <Text style={styles.text1}>{` `}</Text>
+          <Text style={styles.cambiar}>Cambiar</Text>
+          <Text style={styles.text1}>{` `}</Text>
+          <Text style={styles.cambiar}>contraseña</Text>
+        </Text>
+      </Pressable>
+
+
+      <Pressable
+        style={[styles.gnrarClave, styles.sesinPosition]}
+        onPress={() => navigation.navigate("Vecino_GenerarClave")}
+      >
+        <Text style={[styles.text, styles.textTypo]}>
+          
+        <Text style={styles.text1}>{`   `}</Text>
+          <Text style={styles.cambiar}>¡ Registrate</Text>
+          <Text style={styles.text1}>{` `}</Text>
+          <Text style={styles.cambiar}>Aca !</Text>
+        </Text>
+      </Pressable>
+
+
+      
       
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-
+  pressable: {
+    marginBottom: 16,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -228,7 +244,7 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   textTypo: {
-    lineHeight: 21,
+    lineHeight: 25,
     fontFamily: FontFamily.bodyMediumRegular,
     fontSize: FontSize.body1422_size,
     letterSpacing: 0,
@@ -436,6 +452,7 @@ const styles = StyleSheet.create({
   },
   text1: {
     color: Color.colorDarkgray,
+     fontWeight: 'bold'
   },
   cambiar: {
     color: Color.colorBlack,
@@ -446,7 +463,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   cambiarContrasea: {
-    top: 413,
+    top: 650,
+  },
+  gnrarClave: {
+    top: 800,
   },
   inicioDeSesin: {
     flex: 1,
@@ -454,6 +474,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+
 });
 
 export default InicioDeSesion;

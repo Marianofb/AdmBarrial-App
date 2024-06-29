@@ -1,4 +1,9 @@
 from flask import jsonify, request
+from sqlalchemy import null
+import random, string
+
+from twilio.rest import Client
+
 
 import sys
 from os.path import dirname, abspath
@@ -15,6 +20,11 @@ sys.path.append(app_dir)
 from config import db
 from models import Vecino, Personal
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+
 class UsuarioService:
 
     @staticmethod
@@ -22,17 +32,21 @@ class UsuarioService:
         try:
             data = request.get_json()
             documento = data.get('documento')
+            contraseña = data.get('contraseña')
 
-            if not documento:
+            if not documento or not contraseña:
                 #return jsonify({'error': 'Documento y contraseña son requeridos'}), 400
                 return False
 
             # Si no se encontró en Personal, intentar con Vecino
             usuario_vecino = Vecino.query.filter_by(documento=documento).first()
             if usuario_vecino:
-                # Autenticación exitosa
-                #return jsonify({'message': 'Autenticación exitosa para vecino'}), 200
-                return True
+                if usuario_vecino.contraseña == contraseña:
+                    # Contraseña correcta, autenticación exitosa
+                    return True
+                else:
+                    # Contraseña incorrecta
+                    return False
 
             # Si ninguno coincide
             #return jsonify({'error': 'Documento o contraseña incorrectos'}), 401
@@ -41,14 +55,15 @@ class UsuarioService:
         except Exception as e:
             #return jsonify({'error': str(e)}), 500
             return False
+        
     @staticmethod        
     def loginPersonal():
         try:
             data = request.get_json()
             documento = data.get('documento')
-            password = data.get('password')
+            contraseña = data.get('contraseña')
 
-            if not documento or not password:
+            if not documento or not contraseña:
                 return False
 
             # Busca al usuario en la base de datos por el legajo (documento)
@@ -56,7 +71,7 @@ class UsuarioService:
 
             if usuario_personal:
                 # Verifica la contraseña
-                if usuario_personal.password == password:
+                if usuario_personal.password == contraseña:
                     # Contraseña correcta, autenticación exitosa
                     return True
                 else:
@@ -69,10 +84,90 @@ class UsuarioService:
         except Exception as e:
             return False
 
-
 #---------------------------VECINO---------------------------------#
-
 class VecinoService:
+
+    @staticmethod
+    def enviar_sms(nueva_contraseña, celular):
+        try:
+            # Configurar credenciales de Twilio
+            account_sid = "ACf1fb365402f6e25b11e1d259173a97d1"  # Reemplazar con tu Account SID de Twilio
+            auth_token = "f77c85664eee44ddb13593f97fbcc267"  # Reemplazar con tu Auth Token de Twilio
+            twilio_phone_number = +17752640959  # Reemplazar con tu número de Twilio
+
+            # Inicializar cliente de Twilio
+            client = Client(account_sid, auth_token)
+            
+            # Enviar mensaje SMS
+            message = client.messages.create(
+                body=f"Tu nueva contraseña es: {nueva_contraseña}",
+                from_=twilio_phone_number,
+                to=celular
+            )
+            
+            print(message.sid)  # Opcional: Imprimir el SID del mensaje para verificar el envío
+            return True
+        
+        except Exception as e:
+            print(f"Error al enviar SMS: {str(e)}")
+            return False
+    
+    @staticmethod
+    def generar_clave_acceso():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+            celular = data.get('celular')
+            
+            # Verificar si el vecino existe en la base de datos
+            vecino = Vecino.query.filter_by(documento=documento).first()
+            
+            if not vecino or vecino.contraseña != null:
+                return False
+            
+            # Actualizar la clave de acceso del vecino en la base de datos
+            nueva_contraseña = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+            vecino.contraseña = nueva_contraseña
+            vecino.celular = celular
+            
+            if VecinoService.enviar_sms(nueva_contraseña, celular):
+                # Actualizar la contraseña del vecino en la base de datos
+                vecino.contraseña = nueva_contraseña
+                vecino.celular = celular
+                db.session.commit()
+                return True
+            else:
+                return False
+            
+        
+        except Exception as e:
+            db.session.rollback()
+            return False
+
+    @staticmethod
+    def cambiar_clave_acceso():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+            claveActual = data.get('claveActual')
+            claveNueva = data.get('claveNueva')
+            claveNuevaSegunda = data.get('claveNuevaSegunda')
+            
+            # Verificar si el vecino existe en la base de datos
+            vecino = Vecino.query.filter_by(documento=documento).first()
+            
+            if not vecino or vecino.contraseña != claveActual or claveNueva != claveNuevaSegunda:
+                return False
+            
+            vecino.contraseña = claveNueva
+            db.session.commit()
+            
+            return True 
+        
+        except Exception as e:
+            db.session.rollback()
+            return False
+
     @staticmethod
     def get_all_vecino():
         vecinos = Vecino.query.all()

@@ -31,7 +31,7 @@ const ConsultaDeDenuncia = () => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://192.168.1.8:5000/denuncias/getAll');
+        const response = await fetch('http://192.168.1.17:5000/denuncias/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -62,14 +62,12 @@ const ConsultaDeDenuncia = () => {
     } 
   };
 
-  //console.log("DOCUMENTO DE USUARIO: ", documentoUsuario.trim())
-
   const denunciasFiltradas = denuncias.filter(denuncia => {
     if(vecino)
     {
       //console.log("PROBANDO: ", denuncia.documento === documentoUsuario.trim())
       //console.log("documentoDenuncia: ", denuncia.documento, " / documentoUsuario: " , documentoUsuario.trim())
-      return denuncia.documento === documentoUsuario.trim();
+      return denuncia.documento === documentoUsuario;
     }
     else if (documento.trim() === "") 
     {

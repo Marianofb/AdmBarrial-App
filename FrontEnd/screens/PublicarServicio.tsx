@@ -34,7 +34,7 @@ const PublicarServicio = () => {
   // Función para manejar el envío del formulario
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.8:5000/servicios/new', {
+      const response = await fetch('http://192.168.1.17:5000/servicios/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

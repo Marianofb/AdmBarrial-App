@@ -28,7 +28,7 @@ const Visitante_BsquedaDeServicio = () => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://192.168.1.8:5000/servicios/getAll');
+        const response = await fetch('http://192.168.1.17:5000/servicios/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }

@@ -1,9 +1,12 @@
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { View, Text, Pressable, TouchableOpacity, StyleSheet } from "react-native";
+
 import Principal from "./screens/Principal";
-import CambiarContrasea from "./screens/CambiarContrasea";
-import CambiarContrasea1 from "./screens/CambiarContrasea1";
+import CambiarContraseña from "./screens/CambiarContraseña";
+import Vecino_GenerarClave from "./screens/Vecino_GenerarClave";
 import InicioDeSesion from "./screens/InicioDeSesion";
 import MenuPrincipal_Vecino from "./screens/MenuPrincipal_Vecino";
 import MenuPrincipal_Personal from "./screens/MenuPrincipal_Personal";
@@ -15,8 +18,6 @@ import BsquedaDeServicio from "./screens/BsquedaDeServicio";
 import ConsultaDeReclamo from "./screens/ConsultaDeReclamo";
 import GenerarReclamo from "./screens/GenerarReclamo";
 import PublicarServicio from "./screens/PublicarServicio";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View, Text, Pressable, TouchableOpacity, StyleSheet } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,13 +48,13 @@ const App = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="CambiarContrasea"
-              component={CambiarContrasea}
+              name="CambiarContraseña"
+              component={CambiarContraseña}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="CambiarContrasea1"
-              component={CambiarContrasea1}
+             <Stack.Screen
+              name="Vecino_GenerarClave"
+              component={Vecino_GenerarClave}
               options={{ headerShown: false }}
             />
             <Stack.Screen

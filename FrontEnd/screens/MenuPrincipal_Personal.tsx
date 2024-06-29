@@ -6,6 +6,7 @@ import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navig
 import { Color, Padding, FontSize, FontFamily, Border } from "../GlobalStyles";
 
 type RouteParams = {
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean
@@ -19,7 +20,7 @@ const MenuPrincipal_Personal = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>(); // Usar el tipo MenuPrincipalRouteProp para route
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false, personal: false };
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || {documentoUsuario:"", nombre: '', apellido: '', vecino: false, personal: false };
 
   //console.log("MENU PRINCIPAL Nombre: ", nombre, " / Apellido: ", apellido)
   //console.log("MENU PRINCIPAL Vecino: ", vecino, " / Apellido: ", personal)
@@ -87,7 +88,8 @@ const MenuPrincipal_Personal = () => {
         <Pressable
           style={[styles.image8, styles.imagePosition]}
           onPress={() => navigation.navigate("ConsultaDeReclamo", 
-                                                    { nombre: nombre,
+                                                    { documentoUsuario:documentoUsuario,
+                                                    nombre: nombre,
                                                     apellido:apellido,
                                                     vecino : vecino,
                                                     personal : personal})}
@@ -104,7 +106,8 @@ const MenuPrincipal_Personal = () => {
         <Pressable
           style={[styles.image7, styles.image7Layout]}
           onPress={() => navigation.navigate("ConsultaDeDenuncias", 
-                                              { nombre: nombre,
+                                              { documentoUsuario:documentoUsuario,
+                                              nombre: nombre,
                                               apellido:apellido,
                                               vecino : vecino,
                                               personal : personal})}

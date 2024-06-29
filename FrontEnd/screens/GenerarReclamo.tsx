@@ -40,7 +40,7 @@ const GenerarReclamo = () => {
   const handleSubmit = async () => {
     try {
       
-      const response = await fetch('http://192.168.1.8:5000/reclamos/new', {
+      const response = await fetch('http://192.168.1.17:5000/reclamos/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
