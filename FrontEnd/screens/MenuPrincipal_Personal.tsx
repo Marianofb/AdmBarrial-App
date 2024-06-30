@@ -34,31 +34,8 @@ const MenuPrincipal_Personal = () => {
         onPress={() => navigation.navigate("Principal")}
       >
         <View style={[styles.wishlist, styles.wishlistLayout]}>
-          <View style={styles.icons}>
-            <View style={styles.cart}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={require("../assets/home1.png")}
-              />
-            </View>
-            <View style={[styles.home, styles.homeSpaceBlock]}>
-              <Image
-                style={styles.iconLayout}
-                contentFit="cover"
-                source={require("../assets/heart.png")}
-              />
-            </View>
-            <View style={[styles.account, styles.homeSpaceBlock]}>
-              <Image
-                style={[styles.userIcon, styles.iconLayout]}
-                contentFit="cover"
-                source={require("../assets/user.png")}
-              />
-            </View>
-          </View>
+          <Text style={styles.salir}>Salir</Text>
         </View>
-        <Text style={styles.salir}>Salir</Text>
       </Pressable>
       <Image
         style={[styles.image4Icon, styles.image7Layout]}
@@ -83,16 +60,33 @@ const MenuPrincipal_Personal = () => {
       />
       <Text style={styles.bienvenido}>{`¡Bienvenido!`}</Text>
       <Text style={styles.nombreApellido}>{`${nombre} ${apellido}`}</Text>
-      
       <View style={styles.image9Parent}>
+        <Pressable
+          style={[styles.image9, styles.imagePosition]}
+          onPress={() => navigation.navigate("BsquedaDeServicio", 
+                                         { documentoUsuario: documentoUsuario,
+                                          nombre: nombre,
+                                          apellido:apellido,
+                                          vecino : vecino,
+                                          personal : personal})}
+        >
+          <Image
+            style={styles.icon}
+            contentFit="cover"
+            source={require("../assets/image-9.png")}
+          />
+        </Pressable>
+        <Text style={styles.serviciospromociones}>Servicios/Promociones</Text>
+      </View>
+      <View style={styles.image8Parent}>
         <Pressable
           style={[styles.image8, styles.imagePosition]}
           onPress={() => navigation.navigate("ConsultaDeReclamo", 
-                                                    { documentoUsuario:documentoUsuario,
-                                                    nombre: nombre,
-                                                    apellido:apellido,
-                                                    vecino : vecino,
-                                                    personal : personal})}
+                                                  {documentoUsuario: documentoUsuario, 
+                                                  nombre: nombre,
+                                                  apellido:apellido,
+                                                  vecino : vecino,
+                                                  personal : personal})}
         >
           <Image
             style={styles.icon}
@@ -106,7 +100,7 @@ const MenuPrincipal_Personal = () => {
         <Pressable
           style={[styles.image7, styles.image7Layout]}
           onPress={() => navigation.navigate("ConsultaDeDenuncias", 
-                                              { documentoUsuario:documentoUsuario,
+                                              { documentoUsuario: documentoUsuario,
                                               nombre: nombre,
                                               apellido:apellido,
                                               vecino : vecino,

@@ -48,11 +48,13 @@ const Vecino_GenerarClave = () => {
           onChangeText={setDocumento}
           value={documento}
         />
-        <TextInput
+         <TextInput
           style={styles.inputs}
-          placeholder="Celular..."
-          onChangeText={setCelular}
+          placeholder="54 9 1234 1234"
+          defaultValue="54 9 "
+          onChangeText={(text) => setCelular(text.replace(/[^0-9]/g, ''))}
           value={celular}
+          keyboardType="numeric"
         />
       </View>
       <Pressable style={styles.button} onPress={genrarClave}>

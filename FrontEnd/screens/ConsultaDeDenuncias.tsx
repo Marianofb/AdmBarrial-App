@@ -120,16 +120,18 @@ const ConsultaDeDenuncia = () => {
         </View>
       </View>
 
+
+      {personal && (
       <Pressable
-        style={styles.goBack}
-        onPress={handlePress}
+        style={[styles.actualizarParent, styles.actualizarLayout]}
+        onPress={() => navigation.navigate("Principal")}
       >
-        <Image
-          style={styles.pathLayout}
-          contentFit="cover"
-          source={require("../assets/go-back.png")}
-        />
+        <View style={[styles.otroActualizar, styles.actualizarLayout]}>
+          <Text style={styles.actualizar}>Cambiar Estado</Text>
+        </View>
       </Pressable>
+      )}
+
 
       <Pressable
        onPress={() => navigation.navigate("RegistroDeDenuncias", { documentoUsuario, nombre, apellido, vecino, personal })}
@@ -140,10 +142,56 @@ const ConsultaDeDenuncia = () => {
           source={require("../assets/add.png")}
         />
         </Pressable>
+        
+        <Pressable
+        style={styles.goBack}
+        onPress={handlePress}
+      >
+        <Image
+          style={styles.pathLayout}
+          contentFit="cover"
+          source={require("../assets/go-back.png")}
+        />
+      </Pressable>
+
     </View>
   );
 };
 const styles = StyleSheet.create({
+  otroActualizar: {
+    marginLeft: -110, // Ajusta el valor de marginLeft para moverlo más a la izquierda
+    borderRadius: Border.br_16xl,
+    padding: Padding.p_base,
+    backgroundColor: Color.colorBlack,
+  },
+  
+  actualizar: {
+    fontSize: 25,
+    lineHeight: 35,
+    textAlign: "justify",
+    width: 120,
+    height: 34,
+    alignItems: "center",
+    display: "flex",
+    color: Color.colorWhite1,
+    fontFamily: FontFamily.bodyMediumRegular,
+    letterSpacing: 0,
+    position: "absolute",
+    top: 13, // Ajusta el valor de top según sea necesario
+    left: 15, // Ajusta el valor de left para mover el texto más a la izquierda
+  },
+  
+  actualizarParent: {
+    marginLeft: -90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
+    top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
+  },
+  
+  actualizarLayout: {
+    height: 59,
+    width: 120,
+    left: "45%", // Mantén centrado horizontalmente
+    position: "absolute",
+  },
   container1: {
     top: 314,
     width: 343,
@@ -505,7 +553,7 @@ const styles = StyleSheet.create({
   },
   goBack: {
     left: 149,
-    top: 717,
+    top: 755,
     width: 74,
     height: 77,
     position: "absolute",
@@ -590,7 +638,7 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     top: 671,
-    left: 280,
+    left: 250,
     width: 77,
     height: 72,
     position: "absolute",

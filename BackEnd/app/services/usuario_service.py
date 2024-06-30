@@ -20,10 +20,6 @@ sys.path.append(app_dir)
 from config import db
 from models import Vecino, Personal
 
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
 
 class UsuarioService:
 
@@ -90,17 +86,18 @@ class VecinoService:
     @staticmethod
     def enviar_sms(nueva_contraseña, celular):
         try:
+            #print("ENVIAR SMS")
             # Configurar credenciales de Twilio
-            #account_sid = "ACf1fb365402f6e25b11e1d259173a97d1"  # Reemplazar con tu Account SID de Twilio
-            #auth_token = "f77c85664eee44ddb13593f97fbcc267"  # Reemplazar con tu Auth Token de Twilio
-            #twilio_phone_number = +17752640959  # Reemplazar con tu número de Twilio
+            account_sid = "ACf1fb365402f6e25b11e1d259173a97d1"  # Reemplazar con tu Account SID de Twilio
+            auth_token = "f77c85664eee44ddb13593f97fbcc267"  # Reemplazar con tu Auth Token de Twilio
+            twilio_phone_number = +17752640959  # Reemplazar con tu número de Twilio
 
             # Inicializar cliente de Twilio
-            #client = Client(account_sid, auth_token)
-            
+            client = Client(account_sid, auth_token)
+
             # Enviar mensaje SMS
             message = client.messages.create(
-                body=f"Tu nueva contraseña es: {nueva_contraseña}",
+                body=f"ADM_BARRIAL: Tu nueva contraseña es: {nueva_contraseña}",
                 from_=twilio_phone_number,
                 to=celular
             )
@@ -115,14 +112,19 @@ class VecinoService:
     @staticmethod
     def generar_clave_acceso():
         try:
+            #print("GNRAR CLAVE")
+
             data = request.get_json()
             documento = data.get('documento')
             celular = data.get('celular')
             
             # Verificar si el vecino existe en la base de datos
             vecino = Vecino.query.filter_by(documento=documento).first()
-            
-            if not vecino or vecino.contraseña != null:
+            #print("Vecino")
+            #print("Nombre: ", vecino.nombre)
+            #print("Contraseña: ", vecino.contraseña)
+            if not vecino or not vecino.contraseña != null:
+                #print("PRIMERO FALSO")
                 return False
             
             # Actualizar la clave de acceso del vecino en la base de datos

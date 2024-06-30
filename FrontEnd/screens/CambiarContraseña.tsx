@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
+import { StyleSheet, View, Text, Pressable, TextInput, Alert, TouchableOpacity  } from "react-native";
+import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
-import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
+import { Color, FontFamily, FontSize, Padding, Border } from "../GlobalStyles"; 
 
 const CambiarContraseña = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -13,13 +13,19 @@ const CambiarContraseña = () => {
   const [claveNueva, setClaveNueva] = useState('');
   const [claveNuevaSegunda, setClaveNuevaSegunda] = useState('');
 
+  const [contraseñaActualVisible, setContraseñaActualVisible] = useState(false);
+
+  const toggleContraseñaActualVisibility = () => {
+    setContraseñaActualVisible(!contraseñaActualVisible);
+    };
+
+
   // Función para manejar el envío del formulario
   const genrarClave = async () => {
     if (claveNueva !== claveNuevaSegunda) {
       Alert.alert('Error', 'Las nuevas claves no coinciden.');
       return;
     }
-
     try {
       const response = await fetch('http://192.168.1.17:5000/usuarios/vecinos/cambiarClave', {
         method: 'POST',
@@ -35,14 +41,14 @@ const CambiarContraseña = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Hubo un problema al generar la clave.');
+        throw new Error('Hubo un problema al cambiar la clave.');
       }
 
-      Alert.alert('Clave generada', 'La clave ha sido generada exitosamente.', [
+      Alert.alert('Clave Nueva Guardada', 'La clave nueva ha sido generada exitosamente.', [
         { text: 'OK' },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al generar la clave.');
+      Alert.alert('Error', 'Hubo un problema al cambiar la clave.');
     }
   };
 
@@ -50,6 +56,7 @@ const CambiarContraseña = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Cambiar Contraseña</Text>
       <View style={styles.inputsGroup}>
+        
         <TextInput
           style={styles.inputs}
           placeholder="Documento..."
@@ -86,6 +93,11 @@ const CambiarContraseña = () => {
 };
 
 const styles = StyleSheet.create({
+  eyeIcon3: {
+    marginLeft: 8,
+    height: 24,
+    width: 24,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
