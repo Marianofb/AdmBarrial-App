@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import * as ImagePicker from 'expo-image-picker';
 import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
@@ -8,6 +9,7 @@ import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
 
 type RouteParams = {
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -19,9 +21,8 @@ type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
 const GenerarReclamo = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
   const route = useRoute<PantallasRouteProp>();
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   const [descripcion, setDescripcion] = useState('');
   const [documento, setDocumento] = useState('');
@@ -30,89 +31,117 @@ const GenerarReclamo = () => {
   const [idReclamoUnificado, setIdReclamoUnificado] = useState('');
   const [idSitio, setIdSitio] = useState("");
   const [legajo, setLegajo] = useState("");
-
+  const [image, setImage] = useState<string | null>(null);
 
   const handleEstadoChange = (value: string) => {
     setEstado(value);
   };
 
-  // Función para manejar el envío del formulario
+  const pickImage = async () => {
+    // Solicitar permisos para acceder a la cámara y la galería
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
+    // Permitir al usuario seleccionar una imagen
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
-      
+      const formData = new FormData();
+      formData.append('documento', documento);
+      formData.append('idSitio', idSitio);
+      formData.append('idDesperfecto', idDesperfecto);
+      formData.append('descripcion', descripcion);
+      formData.append('estado', estado);
+      formData.append('legajo', legajo);
+
+      if (image) {
+        formData.append('imagen', {
+          uri: image,
+          name: 'photo.jpg',
+          type: 'image/jpeg',
+        } as any);
+      }
+
       const response = await fetch('http://192.168.1.17:5000/reclamos/new', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          // Aquí puedes añadir otros headers si son necesarios, como tokens de autenticación
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify({
-          documento,
-          idSitio,
-          idDesperfecto,
-          descripcion,
-          estado,
-          //idReclamoUnificado,
-          legajo,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
         throw new Error('Hubo un problema al crear el reclamo.');
       }
 
-      // Si la solicitud es exitosa, puedes mostrar un mensaje al usuario o navegar a otra pantalla
       Alert.alert('Reclamo creado!', 'El reclamo ha sido creado exitosamente.', [
         {
           text: 'OK'
         },
       ]);
     } catch (error) {
-      // Manejo de errores, por ejemplo, mostrar un mensaje de error al usuario
       Alert.alert('Error');
     }
   };
 
-
   return (
     <View style={styles.publicarServicioProfesional}>
+      <Text style={styles.publicarUnServicio}>Publicar Reclamo</Text>
 
-    <Text style={styles.publicarUnServicio}>Publicar Reclamo</Text>
-
-      {/* Contenedor de inputs */}
       <View style={styles.inputsGroup}>
-        <TextInput style={[styles.inputs]}
-                    placeholder="Descripcion..."
-                    onChangeText={setDescripcion}
-                    value={descripcion} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="Documento.."
-                    onChangeText={setDocumento}
-                    value={documento} />
+        <TextInput style={styles.inputs}
+                   placeholder="Descripcion..."
+                   onChangeText={setDescripcion}
+                   value={descripcion} />
+        <TextInput style={styles.inputs}
+                   placeholder="Documento.."
+                   onChangeText={setDocumento}
+                   value={documento} />
         <RNPickerSelect
-                    placeholder={{ label: "Seleccionar Estado...", value: null }}
-                    items={[
-                      { label: "Pendiente", value: "pendiente" },
-                      { label: "Resuelto", value: "resuelto" },
-                    ]}
-                    onValueChange={handleEstadoChange}
-                    style={pickerSelectStyles}
-                    value={estado} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="Id Desperfecto.."
-                    onChangeText={setIdDesperfecto}
-                    value={idDesperfecto} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="Id Sitio.."
-                    onChangeText={setIdSitio}
-                    value={idSitio} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="Legajo.."
-                    onChangeText={setLegajo}
-                    value={legajo} />                    
-        
+          placeholder={{ label: "Seleccionar Estado...", value: null }}
+          items={[
+            { label: "Pendiente", value: "pendiente" },
+            { label: "Resuelto", value: "resuelto" },
+          ]}
+          onValueChange={handleEstadoChange}
+          style={pickerSelectStyles}
+          value={estado} />
+        <TextInput style={styles.inputs}
+                   placeholder="Id Desperfecto.."
+                   onChangeText={setIdDesperfecto}
+                   value={idDesperfecto} />
+        <TextInput style={styles.inputs}
+                   placeholder="Id Sitio.."
+                   onChangeText={setIdSitio}
+                   value={idSitio} />
+        <TextInput style={styles.inputs}
+                   placeholder="Legajo.."
+                   onChangeText={setLegajo}
+                   value={legajo} />
+        <Pressable
+            style={styles.uploadButton}
+            onPress={pickImage}
+          >
+            <Text style={styles.uploadButtonText}>Seleccionar Fotos</Text>
+        </Pressable>
+
+          {image && <Image source={{ uri: image }} style={styles.image} />}
       </View>
-  
+
 
       <Pressable
         style={styles.wishlistParent}
@@ -122,10 +151,10 @@ const GenerarReclamo = () => {
           <Text style={styles.publicar}>Publicar</Text>
         </View>
       </Pressable>
-
     </View>
   );
 };
+
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -154,7 +183,22 @@ const pickerSelectStyles = StyleSheet.create({
 
 
 const styles = StyleSheet.create({
-
+  uploadButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginTop: 20,
+  },
   publicarServicioProfesional: {
     paddingBottom:100,
     flex: 1,

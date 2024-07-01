@@ -102,7 +102,7 @@ const BsquedaDeServicio = () => {
               <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize:16 }}>ID: {servicio.idServicio}</Text>
               <Text style={styles.headerText}>Descripcion: {servicio.descripcion}</Text>
               <Text style={styles.headerText}>Tipo: {servicio.tipo}</Text>
-              <Text style={styles.headerText}>Estado: {servicio.estado}</Text>
+              <Text style={styles.headerText}>Estado: {servicio.estado ? 'Activo' : 'Inactivo'}</Text>
             </View>
           ))}
         </ScrollView>
@@ -123,7 +123,7 @@ const BsquedaDeServicio = () => {
       {personal && (
       <Pressable
         style={[styles.actualizarParent, styles.actualizarLayout]}
-        onPress={() => navigation.navigate("Principal")}
+        onPress={() => navigation.navigate("ActualizarServicio")}
       >
         <View style={[styles.otroActualizar, styles.actualizarLayout]}>
           <Text style={styles.actualizar}>Cambiar Estado</Text>

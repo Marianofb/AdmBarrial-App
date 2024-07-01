@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import * as ImagePicker from 'expo-image-picker';
 import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
@@ -17,10 +18,8 @@ type RouteParams = {
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
-
 const RegistroDedenuncias = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
   const route = useRoute<PantallasRouteProp>();
   const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "" , nombre: '', apellido: '', vecino: false , personal: false};
 
@@ -29,7 +28,26 @@ const RegistroDedenuncias = () => {
   const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState('');
   const [aceptarResponsabilidad, setAceptarResponsabilidad] = useState("");
+  const [image, setImage] = useState<string | null>(null);
 
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const handleEstadoChange = (value: string) => {
     setEstado(value);
@@ -39,15 +57,12 @@ const RegistroDedenuncias = () => {
     setAceptarResponsabilidad(value);
   };
 
-  // Función para manejar el envío del formulario
   const handleSubmit = async () => {
     try {
-      
       const response = await fetch('http://192.168.1.17:5000/denuncias/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Aquí puedes añadir otros headers si son necesarios, como tokens de autenticación
         },
         body: JSON.stringify({
           documento,
@@ -61,51 +76,59 @@ const RegistroDedenuncias = () => {
         throw new Error('Hubo un problema al crear la denuncia.');
       }
 
-      // Si la solicitud es exitosa, puedes mostrar un mensaje al usuario o navegar a otra pantalla
       Alert.alert('Denuncia creada!', 'La denuncia ha sido creada exitosamente.', [
         {
           text: 'OK'
         },
       ]);
     } catch (error) {
-      // Manejo de errores, por ejemplo, mostrar un mensaje de error al usuario
       Alert.alert('Error');
     }
   };
 
-
   return (
     <View style={styles.publicarServicioProfesional}>
+      <Text style={styles.publicarUnServicio}>Publicar Denuncia</Text>
 
-    <Text style={styles.publicarUnServicio}>Publicar Denuncia</Text>
-
-      {/* Contenedor de inputs */}
       <View style={styles.inputsGroup}>
-        <TextInput style={[styles.inputs]}
-                    placeholder="Documento.."
-                    onChangeText={setDocumento}
-                    value={documento} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="ID Sitio.."
-                    onChangeText={setIdSitio}
-                    value={idSitio} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="Descripcion.."
-                    onChangeText={setDescripcion}
-                    value={descripcion} />
+        <TextInput
+          style={styles.inputs}
+          placeholder="Documento.."
+          onChangeText={setDocumento}
+          value={documento}
+        />
+        <TextInput
+          style={styles.inputs}
+          placeholder="ID Sitio.."
+          onChangeText={setIdSitio}
+          value={idSitio}
+        />
+        <TextInput
+          style={styles.inputs}
+          placeholder="Descripcion.."
+          onChangeText={setDescripcion}
+          value={descripcion}
+        />
         <RNPickerSelect
-                    placeholder={{ label: "Seleccionar Estado...", value: null}}
-                    items={[
-                      { label: "Pendiente", value: "pendiente" },
-                      { label: "Resuelto", value: "resuelto" },
-                    ]}
-                    onValueChange={handleEstadoChange}
-                    style={pickerSelectStyles}
-                    value={estado} />        
-        
+          placeholder={{ label: "Seleccionar Estado...", value: null}}
+          items={[
+            { label: "Pendiente", value: "pendiente" },
+            { label: "Resuelto", value: "resuelto" },
+          ]}
+          onValueChange={handleEstadoChange}
+          style={pickerSelectStyles}
+          value={estado}
+        />
+        <Pressable
+          style={styles.uploadButton}
+          onPress={pickImage}
+        >
+          <Text style={styles.uploadButtonText}>Seleccionar Fotos</Text>
+        </Pressable>
+        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+
       </View>
   
-
       <Pressable
         style={styles.wishlistParent}
         onPress={handleSubmit}
@@ -114,11 +137,9 @@ const RegistroDedenuncias = () => {
           <Text style={styles.publicar}>Publicar</Text>
         </View>
       </Pressable>
-
     </View>
   );
 };
-
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,
@@ -146,6 +167,22 @@ const pickerSelectStyles = StyleSheet.create({
 
 
 const styles = StyleSheet.create({
+  uploadButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginTop: 20,
+  },
 
   publicarServicioProfesional: {
     paddingBottom:100,

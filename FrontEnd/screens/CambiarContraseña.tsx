@@ -27,7 +27,7 @@ const CambiarContraseña = () => {
       return;
     }
     try {
-      const response = await fetch('http://192.168.1.17:5000/usuarios/vecinos/cambiarClave', {
+      const response = await fetch('http://192.168.1.17:5000/usuarios/cambiarClave', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

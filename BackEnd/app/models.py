@@ -142,6 +142,7 @@ class Reclamo(db.Model):
     estado = db.Column(db.String(80), nullable=False)
     idReclamoUnificado = db.Column(db.Integer, nullable=True)
     legajo = db.Column(db.Integer, db.ForeignKey('personal.legajo'), nullable=False)
+    fotos = db.Column(db.String, nullable=True)  # Ruta o URL de la imagen
     movimientos = db.relationship('MovimientoReclamo', backref='reclamo', lazy=True)
     
     def __repr__(self):
@@ -157,6 +158,7 @@ class Reclamo(db.Model):
             'estado': self.estado,
             'idReclamoUnificado': self.idReclamoUnificado,
             'legajo': self.legajo,
+            'fotos': self.fotos,
             'movimientos': [movimiento.to_json() for movimiento in self.movimientos]
         }
 
@@ -212,7 +214,7 @@ class Servicio(db.Model):
     idServicio = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(80), nullable=False)
     descripcion = db.Column(db.String(255), nullable=False)
-    estado = db.Column(db.String(50), nullable=False)
+    estado = db.Column(db.String(255), nullable=False)
     
     def __repr__(self):
         return f'<Servicio id={self.idServicio} tipo={self.tipo} descripcion={self.descripcion} estado={self.estado}>'
@@ -224,3 +226,7 @@ class Servicio(db.Model):
             'descripcion': self.descripcion,
             'estado': self.estado
         }
+        
+    @property
+    def estado_String(self):
+        return "Activo" if self.estado else "Inactivo"

@@ -18,6 +18,9 @@ import BsquedaDeServicio from "./screens/BsquedaDeServicio";
 import ConsultaDeReclamo from "./screens/ConsultaDeReclamo";
 import GenerarReclamo from "./screens/GenerarReclamo";
 import PublicarServicio from "./screens/PublicarServicio";
+import ActualizarServicio from "./screens/ActualizarServicio";
+import ActualizarReclamo from "./screens/ActualizarReclamo";
+import ActualizarDenuncia from "./screens/ActualizarDenuncia";
 
 const Stack = createNativeStackNavigator();
 
@@ -110,6 +113,21 @@ const App = () => {
             <Stack.Screen
               name="PublicarServicio"
               component={PublicarServicio}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ActualizarServicio"
+              component={ActualizarServicio}
+              options={{ headerShown: false }}
+            />
+             <Stack.Screen
+              name="AcualizarReclamo"
+              component={ActualizarReclamo}
+              options={{ headerShown: false }}
+            />
+             <Stack.Screen
+              name="ActualizarDenuncia"
+              component={ActualizarDenuncia}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

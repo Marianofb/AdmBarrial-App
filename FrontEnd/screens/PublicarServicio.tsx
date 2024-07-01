@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { Image } from "expo-image";
+import * as ImagePicker from 'expo-image-picker';
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
@@ -26,9 +27,29 @@ const PublicarServicio = () => {
   const [tipo, setTipo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState("");
+  const [image, setImage] = useState<string | null>(null);
 
   const handleEstadoChange = (value: string) => {
     setEstado(value);
+  };
+
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   };
 
   // Función para manejar el envío del formulario
@@ -48,11 +69,11 @@ const PublicarServicio = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Hubo un problema al crear el servicio.');
+        throw new Error('Hubo un problema al subir el servicio.');
       }
 
       // Si la solicitud es exitosa, puedes mostrar un mensaje al usuario o navegar a otra pantalla
-      Alert.alert('¡Servicio creado!', 'El servicio ha sido creado exitosamente.', [
+      Alert.alert('Servicio Procesaso Para Validar', 'La validacion del servicio puede demorar 15 dias.', [
         {
           text: 'OK'
         },
@@ -88,6 +109,14 @@ const PublicarServicio = () => {
                     onValueChange={handleEstadoChange}
                     style={pickerSelectStyles}
                     value={estado} />
+
+        <Pressable
+          style={styles.uploadButton}
+          onPress={pickImage}
+        >
+          <Text style={styles.uploadButtonText}>Seleccionar Fotos</Text>
+        </Pressable>
+        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}          
         
       </View>
   
@@ -132,7 +161,22 @@ const pickerSelectStyles = StyleSheet.create({
 
 
 const styles = StyleSheet.create({
-
+  uploadButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginTop: 20,
+  },
   publicarServicioProfesional: {
     paddingBottom:100,
     flex: 1,

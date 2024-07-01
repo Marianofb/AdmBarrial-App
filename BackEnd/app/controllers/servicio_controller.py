@@ -1,3 +1,5 @@
+from flask import jsonify
+
 import sys
 from os.path import dirname, abspath
 
@@ -23,28 +25,28 @@ class ServicioController:
         if servicio_found:
             return servicio_found, 200
         
-        return "No se ha encontrado un servicio que corresponda", 404
+        return jsonify({'error': 'Al buscar el servicio por id'}), 404 
     
     @staticmethod
     def create_servicio(data):
         try:
             nuevo_servicio = ServicioService.create_servicio(data)
-            return nuevo_servicio, 201
+            return jsonify({'exito': 'Al crear el servicio'}), 201 
         except Exception as e:
-            return {"error en la creacion del nuevo servicio": str(e)}, 400
+            return jsonify({'error': 'Al crear el servicio'}), 400 , 400
     
     @staticmethod
     def update_servicio(id, data):
         updated_servicio = ServicioService.update_servicio(id, data)
         if updated_servicio:
-            return updated_servicio, 200
-        
-        return "No se ha podido actualizar el servicio", 404
+            return jsonify({'exito': 'Al actulizar el servicio'}) , 200
+
+        return jsonify({'error': 'Al actulizar el servicio'}), 400 
     
     @staticmethod
     def delete_servicio(id):
         deleted_servicio = ServicioService.delete_servicio(id)
         if deleted_servicio:
-            return deleted_servicio, 200
+            return jsonify({'error': 'Al borrar el servicio'}), 200
         
-        return "No se ha podido eliminar el servicio", 404
+        return jsonify({'error': 'Al eliminar el servicio'}), 404

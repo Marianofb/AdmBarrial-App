@@ -26,6 +26,16 @@ class UsuarioController:
 
         return jsonify({'BackEnd error': 'Documento y contraseña son requeridos'}), 400
     
+    @staticmethod
+    def cambiar_clave_acceso():
+        if UsuarioService.cambiar_clave_acceso_Vecino() == True:
+            return jsonify({'exito': 'Cambio de Clave Exitosa'}), 200
+        
+        if UsuarioService.cambiar_clave_acceso_Personal() == True:
+            return jsonify({'exito': 'Iniciamos Sesion'}), 200
+        
+        return jsonify({'error': 'Al Cambiar la Clave'}), 400 
+    
 #---------------------------VECINO---------------------------------#
 class VecinoController:
     @staticmethod
@@ -34,13 +44,6 @@ class VecinoController:
             return jsonify({'exito': 'Generacion de Clave Exitosa'}), 200
         
         return jsonify({'error': 'Al Generar de Clave'}), 400 
-    
-    @staticmethod
-    def cambiar_clave_acceso():
-        if VecinoService.cambiar_clave_acceso() == True:
-            return jsonify({'exito': 'Cambio de Clave Exitosa'}), 200
-        
-        return jsonify({'error': 'Al Cambiar la Clave'}), 400 
 
     @staticmethod
     def get_all_vecino():

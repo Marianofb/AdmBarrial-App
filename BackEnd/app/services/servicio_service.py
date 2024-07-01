@@ -43,8 +43,6 @@ class ServicioService:
     def update_servicio(id, data):
         updated_servicio = db.session.execute(select(Servicio).filter_by(idServicio=id)).scalar_one_or_none()
         if updated_servicio:
-            updated_servicio.tipo = data['tipo']
-            updated_servicio.descripcion = data['descripcion']
             updated_servicio.estado = data['estado']
             db.session.commit()
         return jsonify(updated_servicio.to_json()), 200

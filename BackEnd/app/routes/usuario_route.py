@@ -25,15 +25,16 @@ def hello():
 def login():
     return UsuarioController.login()
 
+
+@usuarios_bp.route('/cambiarClave', methods =["POST"])
+def cambiar_clave_acceso():
+    return UsuarioController.cambiar_clave_acceso()
+
 #---------------------------VECINO---------------------------------#
 
 @usuarios_bp.route('vecinos/generarClave', methods =["POST"])
 def generar_clave_acceso():
     return VecinoController.generar_clave_acceso()
-
-@usuarios_bp.route('vecinos/cambiarClave', methods =["POST"])
-def cambiar_clave_acceso():
-    return VecinoController.cambiar_clave_acceso()
 
 @usuarios_bp.route('vecinos/getAll', methods =["GET"])
 def get_vecinos():

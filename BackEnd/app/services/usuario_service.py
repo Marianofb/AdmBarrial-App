@@ -79,7 +79,54 @@ class UsuarioService:
 
         except Exception as e:
             return False
-
+        
+    @staticmethod
+    def cambiar_clave_acceso_Vecino():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+            claveActual = data.get('claveActual')
+            claveNueva = data.get('claveNueva')
+            claveNuevaSegunda = data.get('claveNuevaSegunda')
+            
+            # Verificar si el vecino existe en la base de datos
+            vecino = Vecino.query.filter_by(documento=documento).first()
+            
+            if not vecino or vecino.contraseña != claveActual or claveNueva != claveNuevaSegunda:
+                return False
+            
+            vecino.contraseña = claveNueva
+            db.session.commit()
+            
+            return True 
+        
+        except Exception as e:
+            db.session.rollback()
+            return False
+        
+    @staticmethod
+    def cambiar_clave_acceso_Personal():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+            claveActual = data.get('claveActual')
+            claveNueva = data.get('claveNueva')
+            claveNuevaSegunda = data.get('claveNuevaSegunda')
+            
+            # Verificar si el vecino existe en la base de datos
+            personal = Personal.query.filter_by(legajo=documento).first()
+            
+            if not personal or personal.password != claveActual or claveNueva != claveNuevaSegunda:
+                return False
+            
+            personal.password = claveNueva
+            db.session.commit()
+            
+            return True 
+        
+        except Exception as e:
+            db.session.rollback()
+            return False
 #---------------------------VECINO---------------------------------#
 class VecinoService:
 
@@ -141,30 +188,6 @@ class VecinoService:
             else:
                 return False
             
-        
-        except Exception as e:
-            db.session.rollback()
-            return False
-
-    @staticmethod
-    def cambiar_clave_acceso():
-        try:
-            data = request.get_json()
-            documento = data.get('documento')
-            claveActual = data.get('claveActual')
-            claveNueva = data.get('claveNueva')
-            claveNuevaSegunda = data.get('claveNuevaSegunda')
-            
-            # Verificar si el vecino existe en la base de datos
-            vecino = Vecino.query.filter_by(documento=documento).first()
-            
-            if not vecino or vecino.contraseña != claveActual or claveNueva != claveNuevaSegunda:
-                return False
-            
-            vecino.contraseña = claveNueva
-            db.session.commit()
-            
-            return True 
         
         except Exception as e:
             db.session.rollback()

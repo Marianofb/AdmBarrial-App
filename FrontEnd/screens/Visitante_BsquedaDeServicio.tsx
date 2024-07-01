@@ -21,7 +21,7 @@ type Servicio = {
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
-const Visitante_BsquedaDeServicio = () => {
+const Visitante_BsquedaDeServicio = () => { 
   const [idServicio, setID] = useState(""); // Estado para almacenar el ID ingresado
   const [servicios, setServicios] = useState<Servicio[]>([]); // Estado para almacenar los servicios recibidos
 
@@ -101,7 +101,7 @@ const Visitante_BsquedaDeServicio = () => {
               <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize:16 }}>ID: {servicio.idServicio}</Text>
               <Text style={styles.headerText}>Descripcion: {servicio.descripcion}</Text>
               <Text style={styles.headerText}>Tipo: {servicio.tipo}</Text>
-              <Text style={styles.headerText}>Estado: {servicio.estado}</Text>
+              <Text style={styles.headerText}>Estado: {servicio.estado ? 'Activo' : 'Inactivo'}</Text>
             </View>
           ))}
         </ScrollView>
