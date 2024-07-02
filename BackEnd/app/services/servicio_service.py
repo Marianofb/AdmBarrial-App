@@ -43,7 +43,7 @@ class ServicioService:
         db.session.commit()
 
         fotos = []
-        for file in files:
+        for file in files.getlist('files'):
             filename = secure_filename(file.filename)
             foto_data = file.read()
             new_foto = ServicioFoto(servicio_id=new_servicio.idServicio, foto=foto_data, filename=filename)

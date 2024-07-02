@@ -55,12 +55,17 @@ const PublicarServicio = () => {
   };
 
   const seleccionarImagen = async (useLibrary:boolean) => {
+    if (imagenes.length >= 5) {
+      Alert.alert('Límite de imágenes alcanzado', 'No puedes subir más de 5 imágenes por servicio.');
+      return;
+    }
+
     let result;
 
     const options: ImagePicker.ImagePickerOptions ={
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       aspect: [4,3],
-      quality: 0.1,
+      quality: 0.5,
       allowsEditing:true
     };
 
@@ -78,7 +83,7 @@ const PublicarServicio = () => {
     if (!result.canceled) {
       const selectedImageUri = result.assets[0].uri;
       if (selectedImageUri) {
-        
+
         console.log('Selected Image URI:', selectedImageUri);
         guardarImagen(selectedImageUri);
       } else {
@@ -108,11 +113,10 @@ const PublicarServicio = () => {
 
   const renderizarImagen = ({item}: {item:string}) => {
     return(
-      <View style = {{flexDirection: "row", margin: 1, alignItems:"center", gap: 5 }}>
-        <Image source={{ uri: item }} style = {{width: 80, height: 80}}/>
-        <Ionicons.Button name="cloud-upload" onPress={() => cargarImagen(item)}/>
+      <View style = {{margin: 5, alignItems:"center"}}>
+        <Image source={{ uri: item }} style = {{width: 35, height: 35}}/>
         <Ionicons.Button name="trash" onPress={() => eliminarImagen(item)}/>
-      </View>
+    </View>
     );
   };
   
@@ -122,7 +126,17 @@ const PublicarServicio = () => {
   
       formData.append('tipo', tipo);
       formData.append('descripcion', descripcion);
-  
+
+      // Append images
+      imagenes.forEach((imagenUri, index) => {
+        const uriParts = imagenUri.split('.');
+        const fileType = uriParts[uriParts.length - 1];
+        formData.append('files', {
+          uri: imagenUri,
+          name: `photo_${index}.${fileType}`,
+          type: `image/${fileType}`,
+        } as any);
+      });
   
       const response = await fetch('http://192.168.1.17:5000/servicios/new', {
         method: 'POST',
@@ -168,7 +182,12 @@ const PublicarServicio = () => {
             </TouchableOpacity>
         </View>
         
-        <FlatList data = {imagenes} renderItem={renderizarImagen}/>
+        <FlatList 
+          data={imagenes} 
+          renderItem={renderizarImagen} 
+          numColumns={2} 
+          keyExtractor={(item, index) => index.toString()} 
+        />
 
       </View>
       

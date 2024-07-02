@@ -30,10 +30,9 @@ def get_servicio(id):
 
 @servicios_bp.route('/new', methods=["POST"])
 def create_servicio():
-    data = request.form.to_dict()
-    files = request.files.getlist('fotos')
-    response = ServicioController.create_servicio(data, files)
-    return response
+    data = request.form
+    files = request.files
+    return ServicioController.create_servicio(data, files)
     
 @servicios_bp.route('/update/<string:id>', methods=["PUT"])
 def update_servicio(id):
