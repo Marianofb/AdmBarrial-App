@@ -1,4 +1,5 @@
 from config import db
+from sqlalchemy import LargeBinary
 
 class Desperfecto(db.Model):
     __tablename__ = 'desperfectos'
@@ -226,7 +227,21 @@ class Servicio(db.Model):
             'descripcion': self.descripcion,
             'estado': self.estado
         }
+
+class ServicioFoto(db.Model):
+    __tablename__ = 'servicio_fotos'
+    idFoto = db.Column(db.Integer, primary_key=True)
+    servicio_id = db.Column(db.Integer, db.ForeignKey('servicios.idServicio'), nullable=False)
+    foto = db.Column(db.LargeBinary, nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f'<ServicioFoto id={self.idFoto} servicio_id={self.servicio_id}>'
+
+    def to_json(self):
+        return {
+            'idFoto': self.idFoto,
+            'servicio_id': self.servicio_id,
+            'filename': self.filename
+        }
         
-    @property
-    def estado_String(self):
-        return "Activo" if self.estado else "Inactivo"

@@ -28,12 +28,12 @@ class ServicioController:
         return jsonify({'error': 'Al buscar el servicio por id'}), 404 
     
     @staticmethod
-    def create_servicio(data):
-        try:
-            nuevo_servicio = ServicioService.create_servicio(data)
+    def create_servicio(data, files):
+      
+        if ServicioService.create_servicio(data, files):
             return jsonify({'exito': 'Al crear el servicio'}), 201 
-        except Exception as e:
-            return jsonify({'error': 'Al crear el servicio'}), 400 , 400
+        
+        return jsonify({'error': 'Al crear el servicio'}), 400 , 400
     
     @staticmethod
     def update_servicio(id, data):

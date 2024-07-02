@@ -1,5 +1,7 @@
 from sqlalchemy import select
-from flask import jsonify
+from flask import json, jsonify, request
+from werkzeug.utils import secure_filename
+import base64
 
 import sys
 from os.path import dirname, abspath
@@ -14,7 +16,7 @@ app_dir = dirname(current_dir)
 sys.path.append(app_dir)
 
 from config import db
-from models import Servicio
+from models import Servicio, ServicioFoto
 
 class ServicioService:
     @staticmethod
@@ -29,15 +31,30 @@ class ServicioService:
         return jsonify(servicio.to_json())
 
     @staticmethod
-    def create_servicio(data):
+    def create_servicio(data, files):
+        # Crear el nuevo servicio
         new_servicio = Servicio(
             tipo=data['tipo'],
             descripcion=data['descripcion'],
-            estado=data['estado']
+            estado=False
         )
+        
         db.session.add(new_servicio)
         db.session.commit()
-        return jsonify(new_servicio.to_json())
+
+        fotos = []
+        for file in files:
+            filename = secure_filename(file.filename)
+            foto_data = file.read()
+            new_foto = ServicioFoto(servicio_id=new_servicio.idServicio, foto=foto_data, filename=filename)
+            db.session.add(new_foto)
+            fotos.append(new_foto.to_json())
+
+        db.session.commit()
+
+        servicio_json = new_servicio.to_json()
+        servicio_json['fotos'] = fotos
+        return jsonify(servicio_json)
 
     @staticmethod
     def update_servicio(id, data):

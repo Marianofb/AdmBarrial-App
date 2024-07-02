@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
-import { Image } from "expo-image";
-import * as ImagePicker from 'expo-image-picker';
+import { Button, Image, Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 
 type RouteParams = {
@@ -17,6 +19,15 @@ type RouteParams = {
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
+const direcImagenes = FileSystem.documentDirectory + "imagenes/";
+
+const asegurarDirectorioExiste = async () =>{
+  const direcInfo = await FileSystem.getInfoAsync(direcImagenes);
+  if(!direcInfo.exists)
+    {
+      await FileSystem.makeDirectoryAsync(direcImagenes, {intermediates: true});
+    }
+};
 
 const PublicarServicio = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -26,101 +37,141 @@ const PublicarServicio = () => {
 
   const [tipo, setTipo] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [estado, setEstado] = useState("");
-  const [image, setImage] = useState<string | null>(null);
 
-  const handleEstadoChange = (value: string) => {
-    setEstado(value);
+  const[imagenes, setImagenes] = useState<string[]>([]);
+  const[carga, setCarga] = useState(true);
+
+  useEffect(() => {
+    cargarImagenes();
+  }, []);
+
+  const cargarImagenes = async () =>  {
+    await asegurarDirectorioExiste();
+    const archivos = await FileSystem.readDirectoryAsync(direcImagenes);
+    if(archivos.length > 0)
+      {
+        setImagenes(archivos.map(f => direcImagenes + f))
+      }
   };
 
-  const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert('Permission to access camera roll is required!');
-      return;
+  const seleccionarImagen = async (useLibrary:boolean) => {
+    let result;
+
+    const options: ImagePicker.ImagePickerOptions ={
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4,3],
+      quality: 0.1,
+      allowsEditing:true
+    };
+
+    if(useLibrary)
+    {
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+      result = await ImagePicker.launchImageLibraryAsync(options);
+    } else
+    {
+      await ImagePicker.requestCameraPermissionsAsync();
+      result = await ImagePicker.launchCameraAsync(options);
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const selectedImageUri = result.assets[0].uri;
+      if (selectedImageUri) {
+        
+        console.log('Selected Image URI:', selectedImageUri);
+        guardarImagen(selectedImageUri);
+      } else {
+        console.error('No URI returned for the selected image');
+      }
+    } else {
+      console.log('Image selection canceled');
     }
+
   };
 
-  // Función para manejar el envío del formulario
+  const guardarImagen = async (uri:string) => {
+    await asegurarDirectorioExiste();
+
+    const nombreImagen = new Date().getTime() + ".jpg";
+    const dest = direcImagenes + nombreImagen;
+
+    console.log(nombreImagen)
+    await FileSystem.copyAsync({from : uri, to: dest});
+    setImagenes([...imagenes, dest]);
+  }
+
+  const eliminarImagen = async (uri:string) => {
+    await FileSystem.deleteAsync(uri);
+    setImagenes(imagenes.filter((i) => i != uri));
+  };
+
+  const renderizarImagen = ({item}: {item:string}) => {
+    return(
+      <View style = {{flexDirection: "row", margin: 1, alignItems:"center", gap: 5 }}>
+        <Image source={{ uri: item }} style = {{width: 80, height: 80}}/>
+        <Ionicons.Button name="cloud-upload" onPress={() => cargarImagen(item)}/>
+        <Ionicons.Button name="trash" onPress={() => eliminarImagen(item)}/>
+      </View>
+    );
+  };
+  
   const handleSubmit = async () => {
     try {
+      const formData = new FormData();
+  
+      formData.append('tipo', tipo);
+      formData.append('descripcion', descripcion);
+  
+  
       const response = await fetch('http://192.168.1.17:5000/servicios/new', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
           // Aquí puedes añadir otros headers si son necesarios, como tokens de autenticación
         },
-        body: JSON.stringify({
-          tipo,
-          descripcion,
-          estado,
-        }),
+        body: formData,
       });
-
+  
       if (!response.ok) {
         throw new Error('Hubo un problema al subir el servicio.');
       }
-
-      // Si la solicitud es exitosa, puedes mostrar un mensaje al usuario o navegar a otra pantalla
-      Alert.alert('Servicio Procesaso Para Validar', 'La validacion del servicio puede demorar 15 dias.', [
-        {
-          text: 'OK'
-        },
+  
+      Alert.alert('Servicio Procesado Para Validar', 'La validación del servicio puede demorar 15 días.', [
+        { text: 'OK' }
       ]);
     } catch (error) {
-      // Manejo de errores, por ejemplo, mostrar un mensaje de error al usuario
-      Alert.alert('Error');
+      Alert.alert('Error', 'Hubo un problema al procesar el servicio.');
+      console.error('Error submitting service:', error);
     }
   };
 
-
   return (
     <View style={styles.publicarServicioProfesional}>
-
-    <Text style={styles.publicarUnServicio}>Publicar Servicio</Text>
-
-      {/* Contenedor de inputs */}
+      <Text style={styles.publicarUnServicio}>Publicar Servicio</Text>
       <View style={styles.inputsGroup}>
-        <TextInput style={[styles.inputs]}
-                    placeholder="Tipo..."
-                    onChangeText={setTipo}
-                    value={tipo} />
-        <TextInput style={[styles.inputs]}
-                    placeholder="Descripcion.."
-                    onChangeText={setDescripcion}
-                    value={descripcion} />
-        <RNPickerSelect
-                    placeholder={{ label: "Seleccionar Estado...", value: null }}
-                    items={[
-                      { label: "Activo", value: "activo" },
-                      { label: "Cerrado", value: "cerrado" },
-                    ]}
-                    onValueChange={handleEstadoChange}
-                    style={pickerSelectStyles}
-                    value={estado} />
+        <TextInput style={styles.inputs}
+                   placeholder="Tipo..."
+                   onChangeText={setTipo}
+                   value={tipo} />
+        <TextInput style={styles.inputs}
+                   placeholder="Descripcion..."
+                   onChangeText={setDescripcion}
+                   value={descripcion} />
 
-        <Pressable
-          style={styles.uploadButton}
-          onPress={pickImage}
-        >
-          <Text style={styles.uploadButtonText}>Seleccionar Fotos</Text>
-        </Pressable>
-        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}          
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.button} onPress={() => seleccionarImagen(true)}>
+              <Text style={styles.buttonText}>Seleccionar Fotos del Album</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => seleccionarImagen(false)}>
+              <Text style={styles.buttonText}>Abrir Camara</Text>
+            </TouchableOpacity>
+        </View>
         
-      </View>
-  
+        <FlatList data = {imagenes} renderItem={renderizarImagen}/>
 
+      </View>
+      
       <Pressable
         style={styles.wishlistParent}
         onPress={handleSubmit}
@@ -129,38 +180,33 @@ const PublicarServicio = () => {
           <Text style={styles.publicar}>Publicar</Text>
         </View>
       </Pressable>
-
     </View>
   );
 };
 
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: Color.neutral400,
-    borderRadius: Border.br_base,
-    backgroundColor: Color.colorWhite1,
-    color: Color.colorBlack,
-    paddingRight: 30, // to ensure the text is never behind the icon
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: Color.neutral400,
-    borderRadius: Border.br_base,
-    backgroundColor: Color.colorWhite1,
-    color: Color.colorBlack,
-    paddingRight: 30, // to ensure the text is never behind the icon
-  },
-});
-
 
 const styles = StyleSheet.create({
+  button: {
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'blue',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'blue',
+    textAlign: 'center',
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginRight: 10,
+  },
   uploadButton: {
     backgroundColor: '#007bff',
     padding: 10,
@@ -171,11 +217,6 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     color: 'white',
     fontWeight: 'bold',
-  },
-  image: {
-    width: 100,
-    height: 100,
-    marginTop: 20,
   },
   publicarServicioProfesional: {
     paddingBottom:100,
@@ -371,11 +412,8 @@ const styles = StyleSheet.create({
     height: 11,
   },
   container: {
-    marginTop: -6,
-    right: 14,
-    width: 68,
-    height: 14,
-    overflow: "hidden",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fieldsstatusdefaultDark: {
     height: 44,
