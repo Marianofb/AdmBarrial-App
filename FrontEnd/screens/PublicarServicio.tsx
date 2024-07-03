@@ -197,7 +197,7 @@ const PublicarServicio = () => {
         onPress={handleSubmit}
       >
         <View style={styles.wishlist}>
-          <Text style={styles.publicar}>Publicar</Text>
+          <Text style={styles.publicar}>Crear</Text>
         </View>
       </Pressable>
 

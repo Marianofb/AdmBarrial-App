@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
+import { Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, FlatList } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import * as ImagePicker from 'expo-image-picker';
 import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 
 type RouteParams = {
@@ -16,65 +20,167 @@ type RouteParams = {
   personal: boolean;
 };
 
+type Sitios = {
+  idSitio: number;
+  latitud: number;
+  longitud: number;
+  calle: string;
+  numero: string;
+};
+
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
+
+const direcImagenes = FileSystem.documentDirectory + "imagenesServicio/";
+
+const asegurarDirectorioExiste = async () =>{
+  const direcInfo = await FileSystem.getInfoAsync(direcImagenes);
+  if(!direcInfo.exists)
+    {
+      await FileSystem.makeDirectoryAsync(direcImagenes, {intermediates: true});
+    }
+};
 
 
 const GenerarReclamo = () => {
+
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const route = useRoute<PantallasRouteProp>();
   const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   const [descripcion, setDescripcion] = useState('');
   const [documento, setDocumento] = useState('');
-  const [estado, setEstado] = useState('');
   const [idDesperfecto, setIdDesperfecto] = useState("");
   const [idReclamoUnificado, setIdReclamoUnificado] = useState('');
   const [idSitio, setIdSitio] = useState("");
   const [legajo, setLegajo] = useState("");
-  const [image, setImage] = useState<string | null>(null);
 
-  const handleEstadoChange = (value: string) => {
-    setEstado(value);
+  const [sitios, setSitios] = useState<Sitios[]>([]);
+  const [selectedSitioId, setSelectedSitioId] = useState<number | null>(null);
+
+ 
+  const[imagenes, setImagenes] = useState<string[]>([]);
+  const[carga, setCarga] = useState(true);
+
+  useEffect(() => {
+    //cargarImagenes();
+
+    const fetchSitios = async () => {
+      try {
+        const response = await fetch('http://192.168.1.17:5000/sitios/getAll');
+        if (!response.ok) {
+          throw new Error('Error al obtener los servicios');
+        }
+        const data = await response.json();
+        setSitios(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    fetchSitios();
+
+  }, []);
+
+  const cargarImagenes = async () =>  {
+    await asegurarDirectorioExiste();
+    const archivos = await FileSystem.readDirectoryAsync(direcImagenes);
+    if(archivos.length > 0)
+      {
+        setImagenes(archivos.map(f => direcImagenes + f))
+      }
   };
 
-  const pickImage = async () => {
-    // Solicitar permisos para acceder a la cámara y la galería
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert('Permission to access camera roll is required!');
+  const seleccionarImagen = async (useLibrary:boolean) => {
+    //console.log("Cantidad de Fotos: ", imagenes.length)
+    if (imagenes.length >= 7) {
+      Alert.alert('Límite de imágenes alcanzado', 'No puedes subir más de 5 imágenes por reclamo.');
       return;
     }
 
-    // Permitir al usuario seleccionar una imagen
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result;
+
+    const options: ImagePicker.ImagePickerOptions ={
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+      aspect: [4,3],
+      quality: 0.5,
+      allowsEditing:true
+    };
+
+    if(useLibrary)
+    {
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+      result = await ImagePicker.launchImageLibraryAsync(options);
+    } else
+    {
+      await ImagePicker.requestCameraPermissionsAsync();
+      result = await ImagePicker.launchCameraAsync(options);
+    }
+
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const selectedImageUri = result.assets[0].uri;
+      if (selectedImageUri) {
+
+        console.log('Selected Image URI:', selectedImageUri);
+        guardarImagen(selectedImageUri);
+      } else {
+        console.error('No URI returned for the selected image');
+      }
+    } else {
+      console.log('Image selection canceled');
     }
+
+  };
+
+  const guardarImagen = async (uri:string) => {
+    await asegurarDirectorioExiste();
+
+    const nombreImagen = new Date().getTime() + ".jpg";
+    const dest = direcImagenes + nombreImagen;
+
+    console.log(nombreImagen)
+    await FileSystem.copyAsync({from : uri, to: dest});
+    setImagenes([...imagenes, dest]);
+  }
+
+  const eliminarImagen = async (uri:string) => {
+    await FileSystem.deleteAsync(uri);
+    setImagenes(imagenes.filter((i) => i != uri));
+  };
+
+  const renderizarImagen = ({item}: {item:string}) => {
+    return(
+      <View style = {{margin: 5, alignItems:"center"}}>
+        <Image source={{ uri: item }} style = {{width: 35, height: 35}}/>
+        <Ionicons.Button name="trash" onPress={() => eliminarImagen(item)}/>
+    </View>
+    );
   };
 
   const handleSubmit = async () => {
+    if (!selectedSitioId) {
+      Alert.alert('Error', 'Debe seleccionar un servicio.');
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('documento', documento);
       formData.append('idSitio', idSitio);
       formData.append('idDesperfecto', idDesperfecto);
       formData.append('descripcion', descripcion);
-      formData.append('estado', estado);
       formData.append('legajo', legajo);
 
-      if (image) {
-        formData.append('imagen', {
-          uri: image,
-          name: 'photo.jpg',
-          type: 'image/jpeg',
+      // Append images
+      imagenes.forEach((imagenUri, index) => {
+        const uriParts = imagenUri.split('.');
+        const fileType = uriParts[uriParts.length - 1];
+        const fecha = new Date().getTime();
+        formData.append('files', {
+          uri: imagenUri,
+          name:  `${index}${fecha}.${fileType}`,
+          type: `image/${fileType}`,
         } as any);
-      }
+      });
 
       const response = await fetch('http://192.168.1.17:5000/reclamos/new', {
         method: 'POST',
@@ -103,6 +209,20 @@ const GenerarReclamo = () => {
       <Text style={styles.publicarUnServicio}>Publicar Reclamo</Text>
 
       <View style={styles.inputsGroup}>
+          {sitios.length > 0 ? (
+              <RNPickerSelect
+                placeholder={{ label: 'Seleccionar Sitio...', value: null }}
+                items={sitios.map((sitio) => ({
+                  label: `ID: ${sitio.idSitio} - ${sitio.calle}`,
+                  value: sitio.idSitio,
+                }))}
+                onValueChange={(value) => setSelectedSitioId(value)}
+                style={pickerSelectStyles}
+                value={selectedSitioId}
+              />
+            ) : (
+              <Text style={styles.inputs}>Cargando sitios...</Text>
+            )}
         <TextInput style={styles.inputs}
                    placeholder="Descripcion..."
                    onChangeText={setDescripcion}
@@ -111,15 +231,6 @@ const GenerarReclamo = () => {
                    placeholder="Documento.."
                    onChangeText={setDocumento}
                    value={documento} />
-        <RNPickerSelect
-          placeholder={{ label: "Seleccionar Estado...", value: null }}
-          items={[
-            { label: "Pendiente", value: "pendiente" },
-            { label: "Resuelto", value: "resuelto" },
-          ]}
-          onValueChange={handleEstadoChange}
-          style={pickerSelectStyles}
-          value={estado} />
         <TextInput style={styles.inputs}
                    placeholder="Id Desperfecto.."
                    onChangeText={setIdDesperfecto}
@@ -132,14 +243,25 @@ const GenerarReclamo = () => {
                    placeholder="Legajo.."
                    onChangeText={setLegajo}
                    value={legajo} />
-        <Pressable
-            style={styles.uploadButton}
-            onPress={pickImage}
-          >
-            <Text style={styles.uploadButtonText}>Seleccionar Fotos</Text>
-        </Pressable>
 
-          {image && <Image source={{ uri: image }} style={styles.image} />}
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.button} onPress={() => seleccionarImagen(true)}>
+              <Text style={styles.buttonText}>Seleccionar Fotos del Album</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={() => seleccionarImagen(false)}>
+              <Text style={styles.buttonText}>Abrir Camara</Text>
+            </TouchableOpacity>
+        </View>
+
+        
+        <FlatList 
+          data={imagenes} 
+          renderItem={renderizarImagen} 
+          numColumns={4} 
+          keyExtractor={(item, index) => index.toString()} 
+        />
+
       </View>
 
 
@@ -183,6 +305,31 @@ const pickerSelectStyles = StyleSheet.create({
 
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'blue',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'blue',
+    textAlign: 'center',
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginRight: 10,
+  },
   uploadButton: {
     backgroundColor: '#007bff',
     padding: 10,
@@ -194,11 +341,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginTop: 20,
-  },
   publicarServicioProfesional: {
     paddingBottom:100,
     flex: 1,
@@ -207,17 +349,10 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorWhite1,
   },
   publicarUnServicio: {
-    marginLeft: -127.5,
-    top: 88,
     fontSize: FontSize.headingsH3_size,
-    letterSpacing: -0.6,
-    lineHeight: 42,
     fontFamily: FontFamily.headingsH3,
-    fontWeight: "700",
-    left: "50%",
-    textAlign: "center",
     color: Color.colorBlack,
-    position: "absolute",
+    paddingBottom: 50, // Espacio inferior para separar los botones
   },
   inputsGroup: {
     width: "80%", // Ancho del contenedor de inputs
@@ -242,7 +377,7 @@ const styles = StyleSheet.create({
     left: 20, // Posición desde la izquierda
   },
   wishlistParent: {
-    position: "absolute",
+    marginBottom:-80,
     bottom: 175 , // Posición desde abajo
     right:50,
     width: 160,
@@ -253,11 +388,14 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorBlack,
     borderRadius: Border.br_16xl,
     padding: Padding.p_base,
+    bottom: -200 , // Posición desde abajo
+    left:120,
   },
   publicar: {
     color: Color.colorWhite1,
     fontSize: FontSize.size_xl,
     fontFamily: FontFamily.bodyMediumRegular,
+    
   },
   
   pathLayout: {
@@ -391,13 +529,6 @@ const styles = StyleSheet.create({
   wiFiIcon: {
     width: 15,
     height: 11,
-  },
-  container: {
-    marginTop: -6,
-    right: 14,
-    width: 68,
-    height: 14,
-    overflow: "hidden",
   },
   fieldsstatusdefaultDark: {
     height: 44,

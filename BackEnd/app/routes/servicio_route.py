@@ -20,19 +20,19 @@ servicios_bp = Blueprint('servicios', __name__)
 def hello():
     return "Bienvenido a la Tabla de Servicios"
 
-@servicios_bp.route('/getAll', methods =["GET"])
+@servicios_bp.route('getAll', methods =["GET"])
 def get_allServicios():
     return ServicioController.get_all_servicios()
 
-@servicios_bp.route('/get/<int:id>', methods=["GET"])
+@servicios_bp.route('get/<int:id>', methods=["GET"])
 def get_servicio(id):
     return ServicioController.get_servicio_by_id(id)
 
-@servicios_bp.route('/getFoto/<int:id>', methods=["GET"])
+@servicios_bp.route('getFoto/<int:id>', methods=["GET"])
 def get_foto_by_id(id):
     return ServicioController.get_foto_by_id(id)
 
-@servicios_bp.route('/new', methods=["POST"])
+@servicios_bp.route('new', methods=["POST"])
 def create_servicio():
     data = request.form
     files = request.files

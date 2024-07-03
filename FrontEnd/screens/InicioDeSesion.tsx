@@ -39,15 +39,15 @@ const InicioDeSesion = () => {
       const data = await response.json();
   
       if (response.ok) {
+        console.log("LOGIN OK")
         const datosUsuario_Vecino = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/` + documento);
-        //console.log("ERROR VECINO")
         if (!datosUsuario_Vecino.ok) {
-          //console.log("ERROR PERSONAL")
+          console.log("ERROR VECINO")
           const datosUsuario_Personal = await fetch(`http://192.168.1.17:5000/usuarios/personal/get/` + documento);
           if (!datosUsuario_Personal.ok) {
-            //console.log("Personal --> NULL")
+            console.log("Personal --> NULL")
           } else {
-            //console.log("Personal --> NOOO NULL")
+            console.log("Personal --> NOOO NULL")
             const datosUsuario_Personal_json = await datosUsuario_Personal.json();
             setNombre(datosUsuario_Personal_json.nombre);
             setApellido(datosUsuario_Personal_json.apellido);
@@ -63,6 +63,7 @@ const InicioDeSesion = () => {
             });
           }
         } else {
+          console.log("VECINO OK")
           const datosUsuario_Vecino_json = await datosUsuario_Vecino.json();
           setNombre(datosUsuario_Vecino_json.nombre);
           setApellido(datosUsuario_Vecino_json.apellido);

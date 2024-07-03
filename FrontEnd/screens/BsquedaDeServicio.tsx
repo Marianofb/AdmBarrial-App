@@ -58,6 +58,8 @@ const BsquedaDeServicio = () => {
   const route = useRoute<PantallasRouteProp>();
   const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
 
+  //console.log("Vecino: ", vecino)
+
   const handlePress = () => {
     if (vecino) {
       navigation.navigate("MenuPrincipal_Vecino", { documentoUsuario, nombre, apellido, vecino, personal });
@@ -81,13 +83,15 @@ const BsquedaDeServicio = () => {
   const renderizarImagen = (foto: Foto ) => {
 
     //const imageUrl = `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}`;
-    ///console.log(imageUrl); // Verifica la URL en la consola
+    //console.log(imageUrl); // Verifica la URL en la consola
+    //const id = foto.idFoto
     return (
         <Image
             contentFit='cover'
             //source={require(`../assets/imag.png`)}
             //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/1013` }}
             //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}` }}
+            //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/` + id }}
             source={{ uri: `http://via.placeholder.com/151` }}
             style={styles.image}
           />
@@ -164,6 +168,7 @@ const BsquedaDeServicio = () => {
 
       {vecino && (
         <Pressable
+          style={[styles.actualizarParent2, styles.actualizarLayout2]}
           onPress={() =>
             navigation.navigate("PublicarServicio", {
               nombre,
@@ -173,11 +178,9 @@ const BsquedaDeServicio = () => {
             })
           }
         >
-          <Image
-            style={styles.addIcon}
-            contentFit="cover"
-            source={require("../assets/add.png")}
-          />
+          <View style={[styles.otroActualizar, styles.actualizarLayout]}>
+              <Text style={styles.actualizar}>Publicar</Text>
+          </View>
         </Pressable>
       )}
     </View>
@@ -187,12 +190,12 @@ const BsquedaDeServicio = () => {
 
 const styles = StyleSheet.create({
   image: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',  // Ajusta según sea necesario
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
   },
   otroActualizar: {
-    marginLeft: -110, // Ajusta el valor de marginLeft para moverlo más a la izquierda
+    marginLeft: -85, // Ajusta el valor de marginLeft para moverlo más a la izquierda
     borderRadius: Border.br_16xl,
     padding: Padding.p_base,
     backgroundColor: Color.colorBlack,
@@ -218,11 +221,23 @@ const styles = StyleSheet.create({
     marginLeft: -90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
     top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
   },
+
+  actualizarParent2: {
+    marginLeft: 90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
+    top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
+  },
   
   actualizarLayout: {
     height: 59,
     width: 120,
     left: "45%", // Mantén centrado horizontalmente
+    position: "absolute",
+  },
+
+  actualizarLayout2: {
+    height: 59,
+    width: 120,
+    right: "15%", // Mantén centrado horizontalmente
     position: "absolute",
   },
   

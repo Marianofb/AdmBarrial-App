@@ -111,7 +111,7 @@ class Sitio(db.Model):
     comentarios = db.Column(db.String(80), nullable=True)
     denuncias = db.relationship('Denuncia', backref='sitio', lazy=True)
     reclamos = db.relationship('Reclamo', backref='sitio', lazy=True)
-    
+
     def __repr__(self):
         return f'<Sitio id={self.idSitio} calle={self.calle} numero={self.numero}>'
     
@@ -126,8 +126,8 @@ class Sitio(db.Model):
             'entreCalleB': self.entreCalleB,
             'descripcion': self.descripcion,
             'aCargoDe': self.aCargoDe,
-            'apertura': self.apertura,
-            'cierre': self.cierre,
+            'apertura': self.apertura.isoformat() if self.apertura else None,
+            'cierre': self.cierre.isoformat() if self.cierre else None,
             'comentarios': self.comentarios,
             'denuncias': [denuncia.to_json() for denuncia in self.denuncias],
             'reclamos': [reclamo.to_json() for reclamo in self.reclamos]
@@ -143,7 +143,6 @@ class Reclamo(db.Model):
     estado = db.Column(db.String(80), nullable=False)
     idReclamoUnificado = db.Column(db.Integer, nullable=True)
     legajo = db.Column(db.Integer, db.ForeignKey('personal.legajo'), nullable=False)
-    fotos = db.Column(db.String, nullable=True)  # Ruta o URL de la imagen
     movimientos = db.relationship('MovimientoReclamo', backref='reclamo', lazy=True)
     
     def __repr__(self):
@@ -159,8 +158,24 @@ class Reclamo(db.Model):
             'estado': self.estado,
             'idReclamoUnificado': self.idReclamoUnificado,
             'legajo': self.legajo,
-            'fotos': self.fotos,
             'movimientos': [movimiento.to_json() for movimiento in self.movimientos]
+        }
+
+class ReclamoFoto(db.Model):
+    __tablename__ = 'reclamo_fotos'
+    idFoto = db.Column(db.Integer, primary_key=True)
+    reclamo_id = db.Column(db.Integer, db.ForeignKey('reclamos.idReclamo'), nullable=False)
+    foto = db.Column(db.LargeBinary, nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f'<ReclamoFoto id={self.idFoto} reclamo_id={self.reclamo_id}>'
+
+    def to_json(self):
+        return {
+            'idFoto': self.idFoto,
+            'reclamo_id': self.reclamo_id,
+            'filename': self.filename
         }
 
 class MovimientoReclamo(db.Model):

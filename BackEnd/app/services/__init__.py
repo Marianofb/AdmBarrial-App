@@ -14,5 +14,6 @@ from services.denuncia_service import DenunciaService
 from services.reclamo_service import ReclamoService
 from services.servicio_service import ServicioService
 from services.usuario_service import UsuarioService, VecinoService, PersonalService
+from services.sitio_service import SitioService
 
 #print("Funciona Service")

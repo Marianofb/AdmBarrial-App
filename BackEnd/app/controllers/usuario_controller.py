@@ -55,7 +55,7 @@ class VecinoController:
         if vecino:
             return vecino, 200
         
-        return "error: No se ha encontrado un usuario que corresponda", 404
+        return jsonify({'error': 'No se encontro al vecino'}), 400 
     
     @staticmethod
     def create_vecino(data):
@@ -93,7 +93,8 @@ class PersonalController:
         personal = PersonalService.get_personal_by_legajo(legajo)
         if personal:
             return personal, 200
-        return {"error": "No se ha encontrado un personal que corresponda"}, 404
+        
+        return jsonify({'error': 'No se encontro al personal'}), 400 
     
     @staticmethod
     def create_personal(data):
