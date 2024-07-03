@@ -1,3 +1,5 @@
+from flask import jsonify
+
 import sys
 from os.path import dirname, abspath
 
@@ -50,12 +52,11 @@ class ReclamoController:
         return "error: No se ha encontrado un usuario que corresponda", 404
 
     @staticmethod
-    def create_reclamo(data):
-        try:
-            new_reclamo = ReclamoService.create_reclamo(data)
-            return new_reclamo, 201
-        except Exception as e:
-            return "error: No se ha encontrado un usuario que corresponda", 404
+    def create_reclamo(data, files):
+        if ReclamoService.create_reclamo(data, files):
+            return jsonify({'exito': 'Al crear el reclamo'}), 201 
+        
+        return jsonify({'error': 'Al crear el reclamo'}), 400 
     
     @staticmethod
     def update_reclamo(id, data):

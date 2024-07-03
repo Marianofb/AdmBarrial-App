@@ -42,7 +42,7 @@ class ServicioController:
         if ServicioService.create_servicio(data, files):
             return jsonify({'exito': 'Al crear el servicio'}), 201 
         
-        return jsonify({'error': 'Al crear el servicio'}), 400 , 400
+        return jsonify({'error': 'Al crear el servicio'}), 400 
     
     @staticmethod
     def update_servicio(id, data):

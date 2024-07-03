@@ -1,4 +1,5 @@
-from flask import jsonify
+from sqlalchemy import select
+from flask import jsonify, make_response, request
 
 import sys
 from os.path import dirname, abspath
@@ -13,7 +14,7 @@ app_dir = dirname(current_dir)
 sys.path.append(app_dir)
 
 from config import db
-from models import Reclamo
+from models import Reclamo, ReclamoFoto
 
 class ReclamoService:
     def get_all_reclamos():
@@ -45,18 +46,33 @@ class ReclamoService:
         return jsonify({"reclamos": json_reclamos})
     
     @staticmethod
-    def create_reclamo(data):
+    def create_reclamo(data, files):
         new_reclamo = Reclamo(
             documento=data['documento'],
             idSitio=data['idSitio'],
             idDesperfecto=data['idDesperfecto'],
             descripcion=data['descripcion'],
-            estado=False,
-            idReclamoUnificado=data.get('idReclamoUnificado'),
+            estado="pendiente"
+            #idReclamoUnificado=data.get('idReclamoUnificado'),
         )
         db.session.add(new_reclamo)
         db.session.commit()
-        return jsonify(new_reclamo.to_json())
+
+        fotos = []
+        for file in files.getlist('files'):
+            filename = file.filename
+            foto_data = file.read()
+            new_foto = ReclamoFoto(reclamo_id=new_reclamo.idReclamo, foto=foto_data, filename=filename)
+            db.session.add(new_foto)
+            fotos.append(new_foto.to_json())
+
+        db.session.commit()
+        # Imprimir las fotos subidas para verificar
+        print("Fotos subidas:", fotos)
+
+        reclamo_json = new_reclamo.to_json()
+        reclamo_json['fotos'] = fotos
+        return jsonify(reclamo_json)
     
     @staticmethod
     def update_reclamo(id, data):
