@@ -1,7 +1,6 @@
 from sqlalchemy import select
-from flask import json, jsonify, request
+from flask import jsonify, make_response, request
 from werkzeug.utils import secure_filename
-import base64
 
 import sys
 from os.path import dirname, abspath
@@ -22,13 +21,39 @@ class ServicioService:
     @staticmethod
     def get_all_servicios():
         servicios = Servicio.query.all()
-        json_servicios = [servicio.to_json() for servicio in servicios]
-        return jsonify(json_servicios)
+        servicios_data = []
+
+        for servicio in servicios:
+            fotos = ServicioFoto.query.filter_by(servicio_id=servicio.idServicio).all()
+            fotos_data = [{'idFoto': foto.idFoto, 'filename': foto.filename} for foto in fotos]
+
+            servicio_data = servicio.to_json()
+            servicio_data['fotos'] = fotos_data
+            servicios_data.append(servicio_data)
+
+        return jsonify(servicios_data)
 
     @staticmethod
     def get_servicio_by_id(id):
         servicio = Servicio.query.get(id)
-        return jsonify(servicio.to_json())
+        fotos = ServicioFoto.query.filter_by(servicio_id=servicio.idServicio).all()
+        fotos_data = [{'idFoto': foto.idFoto, 'filename': foto.filename} for foto in fotos]
+
+        servicio_data = servicio.to_json()
+        servicio_data['fotos'] = fotos_data
+
+        return jsonify(servicio_data)
+    
+    @staticmethod
+    def get_foto_by_id(id):
+        foto = ServicioFoto.query.get(id)
+        if not foto:
+            return jsonify({'error': 'Foto no encontrada'}), 404
+        
+        response = make_response(foto.foto)
+        response.headers.set('Content-Type', 'image/jpeg')  # Ajusta el tipo MIME según el tipo de imagen almacenada
+        response.headers.set('Content-Disposition', 'inline', filename=foto.filename)
+        return response
 
     @staticmethod
     def create_servicio(data, files):

@@ -14,6 +14,7 @@ sys.path.append(app_dir)
 
 from services import ServicioService
 
+
 class ServicioController:
     @staticmethod
     def get_all_servicios():
@@ -27,6 +28,14 @@ class ServicioController:
         
         return jsonify({'error': 'Al buscar el servicio por id'}), 404 
     
+    @staticmethod
+    def get_foto_by_id(id):
+        servicioFoto_data = ServicioService.get_foto_by_id(id)
+        if servicioFoto_data:
+            return servicioFoto_data, 200
+        
+        return jsonify({'error': 'Al buscar la foto por id'}), 404 
+
     @staticmethod
     def create_servicio(data, files):
       

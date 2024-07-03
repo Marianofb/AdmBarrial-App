@@ -5,6 +5,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Color, Border, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+
 type RouteParams = {
   documentoUsuario:string;
   nombre: string;
@@ -18,6 +19,14 @@ type Servicio = {
   tipo: string;
   descripcion: string;
   estado: boolean;
+  fotos: Foto[];
+};
+
+type Foto = {
+  idFoto: number;
+  servicio_id: number;
+  filename: string;
+  foto: string
 };
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
@@ -45,10 +54,7 @@ const BsquedaDeServicio = () => {
     fetchServicios();
 }, []); // Add an empty dependency array to run the effect only once
 
-
- 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
   const route = useRoute<PantallasRouteProp>();
   const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
 
@@ -72,6 +78,24 @@ const BsquedaDeServicio = () => {
     }
   });
 
+  const renderizarImagen = (foto: Foto ) => {
+
+    //const imageUrl = `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}`;
+    ///console.log(imageUrl); // Verifica la URL en la consola
+    return (
+        <Image
+            contentFit='cover'
+            //source={require(`../assets/imag.png`)}
+            //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/1013` }}
+            //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}` }}
+            source={{ uri: `http://via.placeholder.com/151` }}
+            style={styles.image}
+          />
+      )
+    };
+    
+
+  
   return (
     <View style={[styles.bsquedaDeServicio, styles.cardLayout]}>
       <Text style={styles.buscarServicios}>Buscar Servicios</Text>
@@ -99,15 +123,22 @@ const BsquedaDeServicio = () => {
         <ScrollView>
           {serviciosFiltrados.map(servicio => (
             <View key={servicio.idServicio} style={styles.servicioContainer}>
+            
               <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize:16 }}>ID: {servicio.idServicio}</Text>
               <Text style={styles.headerText}>Descripcion: {servicio.descripcion}</Text>
               <Text style={styles.headerText}>Tipo: {servicio.tipo}</Text>
               <Text style={styles.headerText}>Estado: {servicio.estado ? 'Activo' : 'Inactivo'}</Text>
+              
+              {servicio.fotos.map(foto => renderizarImagen(foto))}
             </View>
+            
           ))}
+          
         </ScrollView>
         </View>
       </View>
+
+      
 
       <Pressable
         style={styles.goBack}
@@ -152,7 +183,14 @@ const BsquedaDeServicio = () => {
     </View>
   );
 };
+
+
 const styles = StyleSheet.create({
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',  // Ajusta según sea necesario
+  },
   otroActualizar: {
     marginLeft: -110, // Ajusta el valor de marginLeft para moverlo más a la izquierda
     borderRadius: Border.br_16xl,
@@ -593,7 +631,6 @@ const styles = StyleSheet.create({
     height: 370,
     width: 343,
     left: 20,
-    position: "absolute",
   },
   searchIcon: {
     top: 5,

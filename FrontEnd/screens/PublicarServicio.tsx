@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Image, Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from "react-native";
+import {Image, Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
@@ -19,7 +19,7 @@ type RouteParams = {
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
-const direcImagenes = FileSystem.documentDirectory + "imagenes/";
+const direcImagenes = FileSystem.documentDirectory + "imagenesServicio/";
 
 const asegurarDirectorioExiste = async () =>{
   const direcInfo = await FileSystem.getInfoAsync(direcImagenes);
@@ -55,6 +55,7 @@ const PublicarServicio = () => {
   };
 
   const seleccionarImagen = async (useLibrary:boolean) => {
+    //console.log("Cantidad de Fotos: ", imagenes.length)
     if (imagenes.length >= 5) {
       Alert.alert('Límite de imágenes alcanzado', 'No puedes subir más de 5 imágenes por servicio.');
       return;
@@ -131,9 +132,10 @@ const PublicarServicio = () => {
       imagenes.forEach((imagenUri, index) => {
         const uriParts = imagenUri.split('.');
         const fileType = uriParts[uriParts.length - 1];
+        const fecha = new Date().getTime();
         formData.append('files', {
           uri: imagenUri,
-          name: `photo_${index}.${fileType}`,
+          name:  `${index}${fecha}.${fileType}`,
           type: `image/${fileType}`,
         } as any);
       });
@@ -161,6 +163,7 @@ const PublicarServicio = () => {
   };
 
   return (
+      
     <View style={styles.publicarServicioProfesional}>
       <Text style={styles.publicarUnServicio}>Publicar Servicio</Text>
       <View style={styles.inputsGroup}>
@@ -185,12 +188,10 @@ const PublicarServicio = () => {
         <FlatList 
           data={imagenes} 
           renderItem={renderizarImagen} 
-          numColumns={2} 
+          numColumns={4} 
           keyExtractor={(item, index) => index.toString()} 
         />
-
       </View>
-      
       <Pressable
         style={styles.wishlistParent}
         onPress={handleSubmit}
@@ -199,7 +200,10 @@ const PublicarServicio = () => {
           <Text style={styles.publicar}>Publicar</Text>
         </View>
       </Pressable>
+
     </View>
+
+    
   );
 };
 
@@ -245,17 +249,10 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorWhite1,
   },
   publicarUnServicio: {
-    marginLeft: -127.5,
-    top: 88,
     fontSize: FontSize.headingsH3_size,
-    letterSpacing: -0.6,
-    lineHeight: 42,
     fontFamily: FontFamily.headingsH3,
-    fontWeight: "700",
-    left: "50%",
-    textAlign: "center",
     color: Color.colorBlack,
-    position: "absolute",
+    paddingBottom: 100, // Espacio inferior para separar los botones
   },
   inputsGroup: {
     width: "80%", // Ancho del contenedor de inputs
@@ -281,7 +278,7 @@ const styles = StyleSheet.create({
   },
   wishlistParent: {
     position: "absolute",
-    bottom: 175 , // Posición desde abajo
+    bottom: 75 , // Posición desde abajo
     right:50,
     width: 160,
     height: 59,
