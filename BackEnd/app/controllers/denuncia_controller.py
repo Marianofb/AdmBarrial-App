@@ -1,3 +1,6 @@
+from sqlalchemy import select
+from flask import jsonify, make_response, request
+
 import sys
 from os.path import dirname, abspath
 
@@ -26,12 +29,11 @@ class DenunciasContoller:
         return "error: No se ha encontrado un usuario que corresponda", 404
     
     @staticmethod
-    def create_denuncia(data):
-        try:
-            nuevo_vecino = DenunciaService.create_denuncia(data)
-            return nuevo_vecino, 201
-        except Exception as e:
-            return {"error": str(e)}, 400
+    def create_denuncia(data, files):
+        if DenunciaService.create_denuncia(data, files):
+            return jsonify({'exito': 'Al crear la denuncia'}), 201 
+        
+        return jsonify({'error': 'Al crear la denuncia'}), 400 
         
     @staticmethod
     def update_denuncia(id, data):

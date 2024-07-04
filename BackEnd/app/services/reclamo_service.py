@@ -49,7 +49,6 @@ class ReclamoService:
     def create_reclamoVecino(data, files):
         new_reclamo = Reclamo(
             documento=data['documento'],
-            legajo=data['legajo'],
             idSitio=data['idSitio'],
             idDesperfecto=data['idDesperfecto'],
             descripcion=data['descripcion'],

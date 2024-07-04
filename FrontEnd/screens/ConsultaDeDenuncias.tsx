@@ -132,16 +132,18 @@ const ConsultaDeDenuncia = () => {
       </Pressable>
       )}
 
-
-      <Pressable
-       onPress={() => navigation.navigate("RegistroDeDenuncias", { documentoUsuario, nombre, apellido, vecino, personal })}
-      >
-        <Image
-          style={styles.addIcon}
-          contentFit="cover"
-          source={require("../assets/add.png")}
-        />
+      {vecino && (
+        <Pressable
+        onPress={() => navigation.navigate("RegistroDeDenuncias", { documentoUsuario, nombre, apellido, vecino, personal })}
+        >
+          <Image
+            style={styles.addIcon}
+            contentFit="cover"
+            source={require("../assets/add.png")}
+          />
+         
         </Pressable>
+        )}
         
         <Pressable
         style={styles.goBack}

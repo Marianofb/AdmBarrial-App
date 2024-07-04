@@ -100,7 +100,7 @@ const ActualizarServicio = () => {
         <RNPickerSelect
           placeholder={{ label: 'Seleccionar Servicio...', value: null }}
           items={servicios.map((servicio) => ({
-            label: `ID: ${servicio.idServicio} - ${servicio.tipo}`,
+            label: `ID: ${servicio.idServicio} - ${servicio.descripcion}`,
             value: servicio.idServicio,
           }))}
           onValueChange={(value) => setSelectedServiceId(value)}

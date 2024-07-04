@@ -197,8 +197,8 @@ class VecinoService:
     @staticmethod
     def get_all_vecino():
         vecinos = Vecino.query.all()
-        json_vecinos = list(map(lambda x: x.to_json(), vecinos))
-        return jsonify({"vecinos": json_vecinos})
+        json_vecinos = [vecino.to_json() for vecino in vecinos]
+        return jsonify(json_vecinos)
 
     @staticmethod
     def get_vecino_by_id(documento):

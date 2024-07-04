@@ -1,8 +1,20 @@
 from sqlalchemy import select
-from flask import jsonify
-from config import db
+from flask import jsonify, make_response, request
 
-from models import Denuncia
+import sys
+from os.path import dirname, abspath
+
+# Obtén el directorio del script actual
+current_dir = dirname(abspath(__file__))
+
+# Subir un nivel para alcanzar la carpeta 'app'
+app_dir = dirname(current_dir)
+
+# Añadir 'app' al sys.path
+sys.path.append(app_dir)
+
+from config import db
+from models import Denuncia, DenunciaFoto
 
 class DenunciaService:
     @staticmethod
@@ -33,17 +45,29 @@ class DenunciaService:
         return jsonify({"denuncias": json_denuncias})
 
     @staticmethod
-    def create_denuncia(data):
+    def create_denuncia(data, files):
         new_denuncia = Denuncia(
             documento=data['documento'],
+            aceptaResponsabilidad=data['aceptarResponsabilidad'], 
             idSitio=data['idSitio'],
-            descripcion=data['descripcion'],
-            estado=data['estado'],
-            aceptaResponsabilidad= 1
-        )
+            )
+        
         db.session.add(new_denuncia)
         db.session.commit()
-        return jsonify(new_denuncia.to_json())
+       
+        fotos = []
+        for file in files.getlist('files'):
+            filename = file.filename
+            foto_data = file.read()
+            new_foto = DenunciaFoto(denuncia_id=new_denuncia.idDenuncias, foto=foto_data, filename=filename)
+            db.session.add(new_foto)
+            fotos.append(new_foto.to_json())
+
+        db.session.commit()
+
+        denuncia_json = new_denuncia.to_json()
+        denuncia_json['fotos'] = fotos
+        return jsonify(denuncia_json)
 
     @staticmethod
     def update_denuncia(id, data):

@@ -6,6 +6,7 @@ import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navig
 import { Color, Border, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
 type RouteParams = {
+  documentoUsuario:string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -17,6 +18,14 @@ type Servicio = {
   tipo: string;
   descripcion: string;
   estado: boolean;
+  fotos: Foto[];
+};
+
+type Foto = {
+  idFoto: number;
+  servicio_id: number;
+  filename: string;
+  foto: string
 };
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
@@ -44,18 +53,17 @@ const Visitante_BsquedaDeServicio = () => {
     fetchServicios();
 }, []); // Add an empty dependency array to run the effect only once
 
-
- 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
   const route = useRoute<PantallasRouteProp>();
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+
+  //console.log("Vecino: ", vecino)
 
   const handlePress = () => {
     if (vecino) {
-      navigation.navigate("MenuPrincipal_Vecino", { nombre, apellido, vecino, personal });
+      navigation.navigate("MenuPrincipal_Vecino", { documentoUsuario, nombre, apellido, vecino, personal });
     } else if (personal) {
-      navigation.navigate("MenuPrincipal_Personal", { nombre, apellido, vecino, personal });
+      navigation.navigate("MenuPrincipal_Personal", { documentoUsuario ,nombre, apellido, vecino, personal });
     } 
     else
     {
@@ -71,6 +79,26 @@ const Visitante_BsquedaDeServicio = () => {
     }
   });
 
+  const renderizarImagen = (foto: Foto ) => {
+
+    //const imageUrl = `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}`;
+    //console.log(imageUrl); // Verifica la URL en la consola
+    //const id = foto.idFoto
+    return (
+        <Image
+            contentFit='cover'
+            //source={require(`../assets/imag.png`)}
+            //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/1013` }}
+            source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}` }}
+            //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/` + id }}
+            //source={{ uri: `http://via.placeholder.com/151` }}
+            style={styles.image}
+          />
+      )
+    };
+    
+
+  
   return (
     <View style={[styles.bsquedaDeServicio, styles.cardLayout]}>
       <Text style={styles.buscarServicios}>Buscar Servicios</Text>
@@ -98,15 +126,22 @@ const Visitante_BsquedaDeServicio = () => {
         <ScrollView>
           {serviciosFiltrados.map(servicio => (
             <View key={servicio.idServicio} style={styles.servicioContainer}>
+            
               <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize:16 }}>ID: {servicio.idServicio}</Text>
               <Text style={styles.headerText}>Descripcion: {servicio.descripcion}</Text>
               <Text style={styles.headerText}>Tipo: {servicio.tipo}</Text>
               <Text style={styles.headerText}>Estado: {servicio.estado ? 'Activo' : 'Inactivo'}</Text>
+              
+              {servicio.fotos.map(foto => renderizarImagen(foto))}
             </View>
+            
           ))}
+          
         </ScrollView>
         </View>
       </View>
+
+      
 
       <Pressable
         style={styles.goBack}
@@ -118,12 +153,16 @@ const Visitante_BsquedaDeServicio = () => {
           source={require("../assets/go-back.png")}
         />
       </Pressable>
-
-    
+      
     </View>
   );
 };
 const styles = StyleSheet.create({
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+  },
   container1: {
     top: 314,
     width: 343,

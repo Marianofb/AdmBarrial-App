@@ -53,11 +53,11 @@ class Vecino(db.Model):
     apellido = db.Column(db.String(80), nullable=False)
     direccion = db.Column(db.String(80), nullable=False)
     codigoBarrio = db.Column(db.Integer, db.ForeignKey('barrios.idBarrio'), nullable=False)
-    denuncias = db.relationship('Denuncia', backref='vecino', lazy=True)
+    denuncias = db.relationship('Denuncia', backref='vecino', foreign_keys='Denuncia.documento')
     reclamos = db.relationship('Reclamo', backref='vecino', lazy=True)
     contraseña = db.Column(db.String(80), nullable=False)
     celular = db.Column(db.String(80), nullable=False)
-
+    
     def __repr__(self):
         return f'<Vecino documento={self.documento} nombre={self.nombre} apellido={self.apellido}>'
 
@@ -70,7 +70,7 @@ class Vecino(db.Model):
             'codigoBarrio': self.codigoBarrio,
             'celular': self.celular
         }
-
+    
 class Denuncia(db.Model):
     __tablename__ = 'denuncias'
     idDenuncias = db.Column(db.Integer, primary_key=True)
@@ -78,7 +78,9 @@ class Denuncia(db.Model):
     idSitio = db.Column(db.Integer, db.ForeignKey('sitios.idSitio'), nullable=False)
     descripcion = db.Column(db.String(80), nullable=False)
     estado = db.Column(db.String(80), nullable=False)
-    aceptaResponsabilidad = db.Column(db.Boolean, nullable=False)
+    aceptaResponsabilidad = db.Column(db.String(80))
+    servicioDenunciado = db.Column(db.String(80))
+    vecinoDenunciado = db.Column(db.String(80), db.ForeignKey('vecinos.documento'))  # Clave externa a vecinos.documento
 
     def __repr__(self):
         return f'<Denuncia id={self.idDenuncias} descripcion={self.descripcion} estado={self.estado}>'
@@ -90,8 +92,11 @@ class Denuncia(db.Model):
             'idSitio': self.idSitio,
             'descripcion': self.descripcion,
             'estado': self.estado,
-            'aceptaResponsabilidad': self.aceptaResponsabilidad
+            'aceptaResponsabilidad': self.aceptaResponsabilidad,
+            'servicioDenunciado': self.servicioDenunciado,
+            'vecinoDenunciado': self.vecinoDenunciado,
         }
+    
     
 class DenunciaFoto(db.Model):
     __tablename__ = 'denuncia_fotos'
@@ -153,7 +158,7 @@ class Reclamo(db.Model):
     idReclamo = db.Column(db.Integer, primary_key=True)
     documento = db.Column(db.String(80), db.ForeignKey('vecinos.documento'), nullable=False)
     idSitio = db.Column(db.Integer, db.ForeignKey('sitios.idSitio'), nullable=False)
-    idDesperfecto = db.Column(db.Integer, db.ForeignKey('desperfectos.idDesperfecto'), nullable=False)
+    idDesperfecto = db.Column(db.String(80), db.ForeignKey('desperfectos.idDesperfecto'), nullable=False)
     descripcion = db.Column(db.String(80), nullable=False)
     estado = db.Column(db.String(80), nullable=False)
     idReclamoUnificado = db.Column(db.Integer, nullable=True)

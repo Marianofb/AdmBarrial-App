@@ -83,7 +83,7 @@ const GenerarReclamo = () => {
       try {
         const response = await fetch('http://192.168.1.17:5000/sitios/getAll');
         if (!response.ok) {
-          throw new Error('Error al obtener los servicios');
+          throw new Error('Error al obtener los sitios');
         }
         const data = await response.json();
         setSitios(data);
@@ -96,7 +96,7 @@ const GenerarReclamo = () => {
       try {
         const response = await fetch('http://192.168.1.17:5000/rubros/getAll');
         if (!response.ok) {
-          throw new Error('Error al obtener los servicios');
+          throw new Error('Error al obtener los rubros');
         }
         const data = await response.json();
         setRubros(data);
@@ -112,6 +112,7 @@ const GenerarReclamo = () => {
           throw new Error('Error al obtener los desperfectos');
         }
         const data = await response.json();
+        //console.log("Desperfecto: ", data)
         setDesperfectos(data);
       } catch (error) {
         console.error('Error:', error);
@@ -143,7 +144,15 @@ const GenerarReclamo = () => {
 
     fetchSitios();
     fetchRubros();
-    fetchDatosPersonal().then(fetchDesperfectos).then(filtrarDesperfectos);
+    if(personal)
+      {
+        fetchDatosPersonal().then(fetchDesperfectos).then(filtrarDesperfectos);
+      }
+      else
+      {
+        fetchDesperfectos()
+      }
+    
 
   }, [documentoUsuario, sectorPersonal]);
 
@@ -226,13 +235,18 @@ const GenerarReclamo = () => {
   };
 
   const handleSubmit = async () => {
-
-    if (!selectedSitioId || !selectedDesperfectoId) {
-      Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
-      return;
-    }
+    
+    //if (!selectedSitioId || !selectedDesperfectoId) {
+     // Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
+     // return;
+   // }
 
     try {
+      
+      if (!selectedSitioId || !selectedDesperfectoId) {
+        Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
+        return;
+      }
       console.log("Documento Usuario: ", documentoUsuario)
       
       const formData = new FormData();
@@ -331,27 +345,44 @@ const GenerarReclamo = () => {
           ) : (
             <Text style={styles.inputs}>Cargando sitios...</Text>
           )}
-        
-          {desperfectos.length > 0 ? (
-            <RNPickerSelect
-              placeholder={{ label: 'Seleccionar Desperfecto...', value: null }}
-              items={desperfectos.filter(d => d.rubro.trim() == sectorPersonal?.toString().trim()).map((desperfecto) => ({
-                label: `ID: ${desperfecto.idDesperfecto} - ${desperfecto.rubro} -${desperfecto.descripcion}`,
-                value: desperfecto.idDesperfecto,
-              }))}
-              onValueChange={(value) => setSelectedDesperfectoId(value)}
-              style={{
-                inputIOS: styles.inputs,
-                inputAndroid: styles.inputs,
-                placeholder: {
-                  color: 'gray',
-                },
-              }}
-              value={selectedDesperfectoId}
-            />
-          ) : (
-            <Text style={styles.inputs}>Cargando desperfectos...</Text>
-          )}
+
+            {vecino && desperfectos.length > 0 && (
+              <RNPickerSelect
+                placeholder={{ label: 'Seleccionar Desperfecto...', value: null }}
+                items={desperfectos.map((desperfecto) => ({
+                  label: `ID: ${desperfecto.idDesperfecto} - ${desperfecto.rubro} - ${desperfecto.descripcion}`,
+                  value: desperfecto.idDesperfecto,
+                }))}
+                onValueChange={(value) => setSelectedDesperfectoId(value)}
+                style={{
+                  inputIOS: styles.inputs,
+                  inputAndroid: styles.inputs,
+                  placeholder: {
+                    color: 'gray',
+                  },
+                }}
+                value={selectedDesperfectoId}
+              />
+            )}
+
+            {personal && desperfectos.length > 0 && (
+              <RNPickerSelect
+                placeholder={{ label: 'Seleccionar Desperfecto...', value: null }}
+                items={desperfectos.filter(d => d.rubro.trim() == sectorPersonal?.toString().trim()).map((desperfecto) => ({
+                  label: `ID: ${desperfecto.idDesperfecto} - ${desperfecto.rubro} - ${desperfecto.descripcion}`,
+                  value: desperfecto.idDesperfecto,
+                }))}
+                onValueChange={(value) => setSelectedDesperfectoId(value)}
+                style={{
+                  inputIOS: styles.inputs,
+                  inputAndroid: styles.inputs,
+                  placeholder: {
+                    color: 'gray',
+                  },
+                }}
+                value={selectedDesperfectoId}
+              />
+            )}
 
           <TextInput
             style={styles.inputs}

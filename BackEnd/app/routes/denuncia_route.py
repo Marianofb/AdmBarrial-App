@@ -36,10 +36,11 @@ def get_denuncia_bySitio(id):
 def get_denuncia_byVecino(documento):
     return DenunciasContoller.get_denuncias_by_sitio(documento)
 
-@denuncias_bp.route('/new', methods=["POST"])
+@denuncias_bp.route('new', methods=["POST"])
 def create_denuncia():
     data = request.get_json()
-    return DenunciasContoller.create_denuncia(data)
+    files = request.files
+    return DenunciasContoller.create_denuncia(data, files)
     
 @denuncias_bp.route('/update/<int:id>', methods=["PUT"])
 def update_denuncia(id):

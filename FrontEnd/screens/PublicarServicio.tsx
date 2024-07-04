@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {Image, Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from "react-native";
+import {Image, Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, ScrollView, FlatList, } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
@@ -162,15 +163,31 @@ const PublicarServicio = () => {
     }
   };
 
+  const handleEstadoChange = (value: string) => {
+    setTipo(value);
+  };
+
   return (
       
     <View style={styles.publicarServicioProfesional}>
       <Text style={styles.publicarUnServicio}>Publicar Servicio</Text>
       <View style={styles.inputsGroup}>
-        <TextInput style={styles.inputs}
-                   placeholder="Tipo..."
-                   onChangeText={setTipo}
-                   value={tipo} />
+        <RNPickerSelect
+            placeholder={{ label: "Seleccionar Tipo...", value: null}}
+            items={[
+              { label: "Comercio", value: "comercio" },
+              { label: "Servicio", value: "profesional" },
+            ]}
+            onValueChange={handleEstadoChange}
+            style={{
+              inputIOS: styles.inputs,
+              inputAndroid: styles.inputs,
+              placeholder: {
+                color: 'gray',
+              },
+            }}
+            value={tipo}
+          />
         <TextInput style={styles.inputs}
                    placeholder="Descripcion..."
                    onChangeText={setDescripcion}
@@ -204,6 +221,31 @@ const PublicarServicio = () => {
     
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: Color.neutral400,
+    borderRadius: Border.br_base,
+    backgroundColor: Color.colorWhite1,
+    color: Color.colorBlack,
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: Color.neutral400,
+    borderRadius: Border.br_base,
+    backgroundColor: Color.colorWhite1,
+    color: Color.colorBlack,
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});
 
 
 const styles = StyleSheet.create({

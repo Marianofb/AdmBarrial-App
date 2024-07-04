@@ -90,9 +90,9 @@ const BsquedaDeServicio = () => {
             contentFit='cover'
             //source={require(`../assets/imag.png`)}
             //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/1013` }}
-            //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}` }}
+            source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/${foto.idFoto}` }}
             //source={{ uri: `http://192.168.1.17:5000/servicios/getFoto/` + id }}
-            source={{ uri: `http://via.placeholder.com/151` }}
+            //source={{ uri: `http://via.placeholder.com/151` }}
             style={styles.image}
           />
       )
@@ -190,8 +190,8 @@ const BsquedaDeServicio = () => {
 
 const styles = StyleSheet.create({
   image: {
-    width: 200,
-    height: 200,
+    width: 100,
+    height: 100,
     resizeMode: 'cover',
   },
   otroActualizar: {
