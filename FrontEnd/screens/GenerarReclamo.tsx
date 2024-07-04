@@ -92,7 +92,7 @@ const GenerarReclamo = () => {
   const seleccionarImagen = async (useLibrary:boolean) => {
     //console.log("Cantidad de Fotos: ", imagenes.length)
     if (imagenes.length >= 7) {
-      Alert.alert('Límite de imágenes alcanzado', 'No puedes subir más de 5 imágenes por reclamo.');
+      Alert.alert('Límite de imágenes alcanzado', 'No puedes subir más de 7 imágenes por reclamo.');
       return;
     }
 
@@ -164,11 +164,59 @@ const GenerarReclamo = () => {
     }
 
     try {
+      console.log("Documento Usuario: ", documentoUsuario)
+      
       const formData = new FormData();
-      formData.append('documento', documento);
-      formData.append('idSitio', selectedSitioId.toString());
-      formData.append('idDesperfecto', idDesperfecto);
-      formData.append('descripcion', descripcion);
+      if(vecino)
+      {
+        formData.append('documento', documentoUsuario);
+        formData.append('idSitio', selectedSitioId.toString());
+        formData.append('idDesperfecto', idDesperfecto);
+        formData.append('descripcion', descripcion);
+        formData.append('legajo', legajo);
+
+        const response = await fetch('http://192.168.1.17:5000/reclamos/vecino/new', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+  
+        if (!response.ok) {
+          throw new Error('Hubo un problema al subir el servicio.');
+        }
+    
+        Alert.alert('Servicio Procesado Para Validar', 'La validación del reclamo puede demorar.', [
+          { text: 'OK' }
+        ]);
+      }
+
+      if(personal)
+      {
+        formData.append('legajo', documentoUsuario);
+        formData.append('idSitio', selectedSitioId.toString());
+        formData.append('idDesperfecto', idDesperfecto);
+        formData.append('descripcion', descripcion);
+
+        const response = await fetch('http://192.168.1.17:5000/reclamos/personal/new', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+  
+        if (!response.ok) {
+          throw new Error('Hubo un problema al subir el servicio.');
+        }
+    
+        Alert.alert('Servicio Procesado Para Validar', 'La validación del reclamo puede demorar.', [
+          { text: 'OK' }
+        ]);
+      }
 
       // Append images
       imagenes.forEach((imagenUri, index) => {
@@ -182,22 +230,7 @@ const GenerarReclamo = () => {
         } as any);
       });
 
-      const response = await fetch('http://192.168.1.17:5000/reclamos/new', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Hubo un problema al subir el servicio.');
-      }
-  
-      Alert.alert('Servicio Procesado Para Validar', 'La validación del reclamo puede demorar.', [
-        { text: 'OK' }
-      ]);
+      
     } catch (error) {
       Alert.alert('Error', 'Hubo un problema al procesar el reclamo.');
       console.error('Error submitting reclamo:', error);
@@ -238,15 +271,16 @@ const GenerarReclamo = () => {
           />
           <TextInput
             style={styles.inputs}
-            placeholder="Documento.."
-            onChangeText={setDocumento}
-            value={documento}
-          />
-          <TextInput
-            style={styles.inputs}
             placeholder="Id Desperfecto.."
             onChangeText={setIdDesperfecto}
             value={idDesperfecto}
+          />
+
+          <TextInput
+            style={styles.inputs}
+            placeholder="Legajo del Inspector.."
+            onChangeText={setLegajo}
+            value={legajo}
           />
     
           <View style={styles.container}>

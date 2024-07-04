@@ -46,9 +46,10 @@ class ReclamoService:
         return jsonify({"reclamos": json_reclamos})
     
     @staticmethod
-    def create_reclamo(data, files):
+    def create_reclamoVecino(data, files):
         new_reclamo = Reclamo(
             documento=data['documento'],
+            legajo=data['legajo'],
             idSitio=data['idSitio'],
             idDesperfecto=data['idDesperfecto'],
             descripcion=data['descripcion'],
@@ -75,24 +76,42 @@ class ReclamoService:
         return jsonify(reclamo_json)
     
     @staticmethod
+    def create_reclamoPersonal(data, files):
+        new_reclamo = Reclamo(
+            documento='00000000',
+            idSitio=data['idSitio'],
+            idDesperfecto=data['idDesperfecto'],
+            descripcion=data['descripcion'],
+            legajo=data['legajo'],
+            estado="pendiente"
+            #idReclamoUnificado=data.get('idReclamoUnificado'),
+        )
+        db.session.add(new_reclamo)
+        db.session.commit()
+
+        fotos = []
+        for file in files.getlist('files'):
+            filename = file.filename
+            foto_data = file.read()
+            new_foto = ReclamoFoto(reclamo_id=new_reclamo.idReclamo, foto=foto_data, filename=filename)
+            db.session.add(new_foto)
+            fotos.append(new_foto.to_json())
+
+        db.session.commit()
+        # Imprimir las fotos subidas para verificar
+        print("Fotos subidas:", fotos)
+
+        reclamo_json = new_reclamo.to_json()
+        reclamo_json['fotos'] = fotos
+        return jsonify(reclamo_json)
+    
+    @staticmethod
     def update_reclamo(id, data):
-        try:
-            reclamo = Reclamo.query.get(id)
-            if reclamo:
-                reclamo.documento = data.get('documento', reclamo.documento)
-                reclamo.idSitio = data.get('idSitio', reclamo.idSitio)
-                reclamo.idDesperfecto = data.get('idDesperfecto', reclamo.idDesperfecto)
-                reclamo.descripcion = data.get('descripcion', reclamo.descripcion)
-                reclamo.estado = data.get('estado', reclamo.estado)
-                reclamo.idReclamoUnificado = data.get('idReclamoUnificado', reclamo.idReclamoUnificado)
-                reclamo.legajo = data.get('legajo', reclamo.legajo)
-                db.session.commit()
-                return jsonify(reclamo.to_json()), 200
-            else:
-                return None
-        except Exception as e:
-            db.session.rollback()
-            return {"error": str(e)}, 500
+        updated_reclamo = db.session.execute(select(Reclamo).filter_by(idReclamo=id)).scalar_one_or_none()
+        if updated_reclamo:
+            updated_reclamo.estado = data['estado']
+            db.session.commit()
+        return jsonify(updated_reclamo.to_json()), 200
     
     @staticmethod
     def delete_reclamo(id):

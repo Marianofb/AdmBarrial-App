@@ -12,12 +12,14 @@ type RouteParams = {
   vecino: boolean;
   personal: boolean;
 };
-
-type Servicio = {
-  idServicio: number;
-  tipo: string;
+type Reclamo = {
+  documento: string;
+  idReclamo: number;
+  idDesperfecto: number;
   descripcion: string;
-  estado: boolean;
+  estado: string;
+  idReclamoUnificado: number;
+  legajo: number;
 };
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
@@ -33,40 +35,67 @@ const ActualizarReclamo = () => {
     personal: false,
   };
 
-  const [tipo, setTipo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState<string | null>(null);
-  const [servicios, setServicios] = useState<Servicio[]>([]);
-  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
+  const [reclamos, setReclamos] = useState<Reclamo[]>([]);
+  const [selectedReclamoId, setSelectedReclamoId] = useState<number | null>(null);
+  const [celularVecino, setCelularVecino] = useState<string | null>(null); // Estado para almacenar el celular del vecino
 
   useEffect(() => {
-    const fetchServicios = async () => {
+    const fetchReclamos = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/servicios/getAll');
+        const response = await fetch('http://192.168.1.17:5000/reclamos/getAll');
         if (!response.ok) {
-          throw new Error('Error al obtener los servicios');
+          throw new Error('Error al obtener los reclamos');
         }
         const data = await response.json();
-        setServicios(data);
+        setReclamos(data);
       } catch (error) {
         console.error('Error:', error);
       }
     };
-    fetchServicios();
+    fetchReclamos();
   }, []);
 
   const handleEstadoChange = (value: string) => {
     setEstado(value);
   };
 
+  const handleReclamoSelect = (reclamoId: number) => {
+    console.log("handleReclamoSelect")
+    setSelectedReclamoId(reclamoId);
+
+    // Obtener el celular del vecino asociado al reclamo
+    const reclamoSeleccionado = reclamos.find(reclamo => reclamo.idReclamo === reclamoId);
+    if (reclamoSeleccionado) {
+      console.log("reclamoSeleccionado")
+      const documentoVecino = reclamoSeleccionado.documento;
+      fetchCelularVecino(documentoVecino);
+    }
+  };
+
+  const fetchCelularVecino = async (documento: string) => {
+    try {
+      console.log("fetchCelularVecino")
+      const response = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/${documento}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener los datos del vecino');
+      }
+      const data = await response.json();
+      setCelularVecino(data.celular);
+      console.log("Celular Vecino: ", celularVecino)
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!selectedServiceId) {
-      Alert.alert('Error', 'Debe seleccionar un servicio.');
+    if (!selectedReclamoId) {
+      Alert.alert('Error', 'Debe seleccionar un reclamo.');
       return;
     }
 
     try {
-      const response = await fetch(`http://192.168.1.17:5000/servicios/update/${selectedServiceId}`, {
+      const response = await fetch(`http://192.168.1.17:5000/reclamos/update/${selectedReclamoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -77,10 +106,10 @@ const ActualizarReclamo = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Hubo un problema al actualizar el servicio.');
+        throw new Error('Hubo un problema al actualizar el reclamo.');
       }
 
-      Alert.alert('Estado Actualizado', 'El estado del servicio ha sido actualizado correctamente.', [
+      Alert.alert('Estado Actualizado', 'El estado del reclamo ha sido actualizado correctamente.', [
         {
           text: 'OK',
           onPress: () => {
@@ -89,29 +118,29 @@ const ActualizarReclamo = () => {
         },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al actualizar el servicio.');
+      Alert.alert('Error', 'Hubo un problema al actualizar el reclamo.');
     }
   };
 
   return (
     <View style={styles.publicarServicioProfesional}>
-      <Text style={styles.publicarUnServicio}>Actualizar Servicio</Text>
+      <Text style={styles.publicarUnServicio}>Actualizar Reclamo</Text>
       <View style={styles.inputsGroup}>
         <RNPickerSelect
-          placeholder={{ label: 'Seleccionar Servicio...', value: null }}
-          items={servicios.map((servicio) => ({
-            label: `ID: ${servicio.idServicio} - ${servicio.tipo}`,
-            value: servicio.idServicio,
+          placeholder={{ label: 'Seleccionar Reclamo...', value: null }}
+          items={reclamos.map((reclamo) => ({
+            label: `ID: ${reclamo.idReclamo} - ${reclamo.descripcion}`,
+            value: reclamo.idReclamo,
           }))}
-          onValueChange={(value) => setSelectedServiceId(value)}
+          onValueChange={(value) => handleReclamoSelect(value)} 
           style={pickerSelectStyles}
-          value={selectedServiceId}
+          value={selectedReclamoId}
         />
         <RNPickerSelect
           placeholder={{ label: 'Seleccionar Estado...', value: null }}
           items={[
-            { label: 'Activo', value: "1" },
-            { label: 'Cerrado', value: "0" },
+            { label: 'Pendiente', value: "pendiente" },
+            { label: 'Resuelto', value: "resuelto" },
           ]}
           onValueChange={handleEstadoChange}
           style={pickerSelectStyles}
@@ -127,6 +156,7 @@ const ActualizarReclamo = () => {
     </View>
   );
 };
+
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,

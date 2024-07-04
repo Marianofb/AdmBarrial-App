@@ -133,7 +133,7 @@ const ConsultaDeReclamo = () => {
       </Pressable>
 
       <Pressable
-       onPress={() => navigation.navigate("GenerarReclamo", { nombre, apellido, vecino, personal })}
+       onPress={() => navigation.navigate("GenerarReclamo", { documentoUsuario, nombre, apellido, vecino, personal })}
       >
         <Image
           style={styles.addIcon}

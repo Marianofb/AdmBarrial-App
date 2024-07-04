@@ -52,8 +52,15 @@ class ReclamoController:
         return "error: No se ha encontrado un usuario que corresponda", 404
 
     @staticmethod
-    def create_reclamo(data, files):
-        if ReclamoService.create_reclamo(data, files):
+    def create_reclamoVecino(data, files):
+        if ReclamoService.create_reclamoVecino(data, files):
+            return jsonify({'exito': 'Al crear el reclamo'}), 201 
+        
+        return jsonify({'error': 'Al crear el reclamo'}), 400 
+    
+    @staticmethod
+    def create_reclamoPersonal(data, files):
+        if ReclamoService.create_reclamoPersonal(data, files):
             return jsonify({'exito': 'Al crear el reclamo'}), 201 
         
         return jsonify({'error': 'Al crear el reclamo'}), 400 
@@ -62,9 +69,9 @@ class ReclamoController:
     def update_reclamo(id, data):
         updated_reclamo = ReclamoService.update_reclamo(id, data)
         if updated_reclamo:
-            return updated_reclamo, 200
-        
-        return "error: No se ha encontrado un usuario que corresponda", 404
+            return jsonify({'exito': 'Al actulizar reclamo'}) , 200
+
+        return jsonify({'error': 'Al actulizar reclamo'}), 400 
     
     @staticmethod
     def delete_reclamo(id):

@@ -40,11 +40,17 @@ def get_reclamoByVecino(documento):
 def get_reclamoByPersonal(id):
     return ReclamoController.get_reclamos_by_personal(id)
 
-@reclamos_bp.route('new', methods=["POST"])
-def create_reclamo():
+@reclamos_bp.route('vecino/new', methods=["POST"])
+def create_reclamVecino():
     data = request.form
     files = request.files
-    return ReclamoController.create_reclamo(data, files)
+    return ReclamoController.create_reclamoVecino(data, files)
+
+@reclamos_bp.route('personal/new', methods=["POST"])
+def create_reclamoPersonal():
+    data = request.form
+    files = request.files
+    return ReclamoController.create_reclamoPersonal(data, files)
     
 @reclamos_bp.route('/update/<int:id>', methods=["PUT"])
 def update_reclamo(id):

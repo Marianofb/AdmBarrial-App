@@ -1,5 +1,4 @@
 from config import db
-from sqlalchemy import LargeBinary
 
 class Desperfecto(db.Model):
     __tablename__ = 'desperfectos'
@@ -21,7 +20,6 @@ class Rubro(db.Model):
     __tablename__ = 'rubros'
     idRubro = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(80), nullable=False)
-    desperfectos = db.relationship('Desperfecto', backref='rubro', lazy=True)
     
     def __repr__(self):
         return f'<Rubro id={self.idRubro} descripcion={self.descripcion}>'
@@ -30,7 +28,6 @@ class Rubro(db.Model):
         return {
             'idRubro': self.idRubro,
             'descripcion': self.descripcion,
-            'desperfectos': [desperfecto.to_json() for desperfecto in self.desperfectos]
         }
 
 class Barrio(db.Model):
@@ -71,6 +68,7 @@ class Vecino(db.Model):
             'apellido': self.apellido,
             'direccion': self.direccion,
             'codigoBarrio': self.codigoBarrio,
+            'celular': self.celular
         }
 
 class Denuncia(db.Model):
@@ -94,7 +92,24 @@ class Denuncia(db.Model):
             'estado': self.estado,
             'aceptaResponsabilidad': self.aceptaResponsabilidad
         }
+    
+class DenunciaFoto(db.Model):
+    __tablename__ = 'denuncia_fotos'
+    idFoto = db.Column(db.Integer, primary_key=True)
+    denuncia_id = db.Column(db.Integer, db.ForeignKey('denuncias.idDenuncias'), nullable=False)
+    foto = db.Column(db.LargeBinary, nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
 
+    def __repr__(self):
+        return f'<DenunciaFoto id={self.idFoto} denuncia_id={self.denuncia_id}>'
+
+    def to_json(self):
+        return {
+            'idFoto': self.idFoto,
+            'denuncia_id': self.denuncia_id,
+            'filename': self.filename
+        }
+    
 class Sitio(db.Model):
     __tablename__ = 'sitios'
     idSitio = db.Column(db.Integer, primary_key=True)
