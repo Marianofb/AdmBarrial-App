@@ -15,5 +15,7 @@ from services.reclamo_service import ReclamoService
 from services.servicio_service import ServicioService
 from services.usuario_service import UsuarioService, VecinoService, PersonalService
 from services.sitio_service import SitioService
+from services.rubro_service import RubroService
+from services.desperfecto_service import DesperfectoService
 
 #print("Funciona Service")

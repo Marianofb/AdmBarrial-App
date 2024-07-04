@@ -15,6 +15,8 @@ from routes.reclamo_route import reclamos_bp
 from routes.servicio_route import servicios_bp
 from routes.usuario_route import usuarios_bp
 from routes.sitio_route import sitios_bp
+from routes.rubro_route import rubros_bp
+from routes.desperfecto_route import desperfectos_bp
 
 #print("Funciona Route")
 
@@ -25,3 +27,5 @@ def register_blueprints(app):
     app.register_blueprint(reclamos_bp, url_prefix="/reclamos")
     app.register_blueprint(servicios_bp, url_prefix="/servicios")
     app.register_blueprint(sitios_bp, url_prefix="/sitios")
+    app.register_blueprint(rubros_bp, url_prefix="/rubros")
+    app.register_blueprint(desperfectos_bp, url_prefix="/desperfectos")

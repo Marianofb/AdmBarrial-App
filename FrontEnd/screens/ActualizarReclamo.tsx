@@ -73,20 +73,29 @@ const ActualizarReclamo = () => {
     }
   };
 
-  const fetchCelularVecino = async (documento: string) => {
-    try {
-      console.log("fetchCelularVecino")
-      const response = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/${documento}`);
-      if (!response.ok) {
-        throw new Error('Error al obtener los datos del vecino');
+    const fetchCelularVecino = async (documento: string) => {
+      try {
+        console.log("fetchCelularVecino")
+        const response = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/${documento}`);
+        if (!response.ok) {
+          throw new Error('Error al obtener los datos del vecino');
+        }
+        const data = await response.json();
+        console.log("Datos: ", data.celular)
+        setCelularVecino(data.celular);
+      } catch (error) {
+        console.error('Error:', error);
       }
-      const data = await response.json();
-      setCelularVecino(data.celular);
-      console.log("Celular Vecino: ", celularVecino)
-    } catch (error) {
-      console.error('Error:', error);
+    };
+
+
+  useEffect(() => {
+    if (celularVecino !== null) {
+      console.log("Celular Vecino actualizado: ", celularVecino);
+
+
     }
-  };
+  }, [celularVecino]);
 
   const handleSubmit = async () => {
     if (!selectedReclamoId) {
@@ -109,6 +118,22 @@ const ActualizarReclamo = () => {
         throw new Error('Hubo un problema al actualizar el reclamo.');
       }
 
+      const enviarMsjResponse = await fetch('http://192.168.1.17:5000/reclamos/enviar_sms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mensaje: `El estado de tu reclamo ID: ${selectedReclamoId} cambió a ESTAOD: ${estado}`,
+          celular: celularVecino,
+        }),
+      });
+  
+      if (!enviarMsjResponse.ok) {
+        throw new Error('Hubo un problema al enviar el SMS al vecino.');
+      }
+  
+
       Alert.alert('Estado Actualizado', 'El estado del reclamo ha sido actualizado correctamente.', [
         {
           text: 'OK',
@@ -118,7 +143,7 @@ const ActualizarReclamo = () => {
         },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al actualizar el reclamo.');
+      Alert.alert('Exito', 'Se envio el msj desde Twillo.');
     }
   };
 

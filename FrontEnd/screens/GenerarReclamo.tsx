@@ -28,6 +28,17 @@ type Sitios = {
   numero: string;
 };
 
+type Rubros = {
+  idRubro: number;
+  descripcion: string;
+};
+
+type Desperfectos = {
+  idDesperfecto: number;
+  descripcion: string;
+  rubro:string
+};
+
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
 const direcImagenes = FileSystem.documentDirectory + "imagenesServicio/";
@@ -55,14 +66,18 @@ const GenerarReclamo = () => {
   const [legajo, setLegajo] = useState("");
 
   const [sitios, setSitios] = useState<Sitios[]>([]);
+  const [rubros, setRubros] = useState<Rubros[]>([]);
+  const [desperfectos, setDesperfectos] = useState<Desperfectos[]>([]);
   const [selectedSitioId, setSelectedSitioId] = useState<number | null>(null);
+  const [selectedDesperfectoId, setSelectedDesperfectoId] = useState<number | null>(null);
 
+  const [sectorPersonal, setSectorPersonal] = useState<string | null>(null);
  
   const[imagenes, setImagenes] = useState<string[]>([]);
   const[carga, setCarga] = useState(true);
 
-  useEffect(() => {
-    cargarImagenes();
+    useEffect(() => {
+      cargarImagenes();
 
     const fetchSitios = async () => {
       try {
@@ -76,9 +91,63 @@ const GenerarReclamo = () => {
         console.error('Error:', error);
       }
     };
-    fetchSitios();
 
-  }, []);
+    const fetchRubros = async () => {
+      try {
+        const response = await fetch('http://192.168.1.17:5000/rubros/getAll');
+        if (!response.ok) {
+          throw new Error('Error al obtener los servicios');
+        }
+        const data = await response.json();
+        setRubros(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    const fetchDesperfectos = async () => {
+      try {
+        const response = await fetch('http://192.168.1.17:5000/desperfectos/getAllWithRubros');
+        if (!response.ok) {
+          throw new Error('Error al obtener los desperfectos');
+        }
+        const data = await response.json();
+        setDesperfectos(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    const fetchDatosPersonal = async () => {
+      try {
+        const response = await fetch(`http://192.168.1.17:5000/usuarios/personal/get/` + documentoUsuario);
+        if (!response.ok) {
+          throw new Error('Error al obtener los servicios');
+        }
+        const data = await response.json();
+        console.log("Documento de Usuario: ", documentoUsuario)
+        console.log("PERSONAL_DATA: ", data.sector)
+        setSectorPersonal(data.sector);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    const filtrarDesperfectos = () => {
+      if (personal && sectorPersonal && desperfectos.length > 0) {
+        const filteredDesperfectos = desperfectos.filter(d => d.rubro === sectorPersonal);
+        setDesperfectos(filteredDesperfectos);
+      }
+    };
+
+
+    fetchSitios();
+    fetchRubros();
+    fetchDatosPersonal().then(fetchDesperfectos).then(filtrarDesperfectos);
+
+  }, [documentoUsuario, sectorPersonal]);
+
+  
 
   const cargarImagenes = async () =>  {
     await asegurarDirectorioExiste();
@@ -158,8 +227,8 @@ const GenerarReclamo = () => {
 
   const handleSubmit = async () => {
 
-    if (!selectedSitioId) {
-      Alert.alert('Error', 'Debe seleccionar un servicio.');
+    if (!selectedSitioId || !selectedDesperfectoId) {
+      Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
       return;
     }
 
@@ -171,7 +240,7 @@ const GenerarReclamo = () => {
       {
         formData.append('documento', documentoUsuario);
         formData.append('idSitio', selectedSitioId.toString());
-        formData.append('idDesperfecto', idDesperfecto);
+        formData.append('idDesperfecto', selectedDesperfectoId.toString());
         formData.append('descripcion', descripcion);
         formData.append('legajo', legajo);
 
@@ -185,7 +254,7 @@ const GenerarReclamo = () => {
         });
   
         if (!response.ok) {
-          throw new Error('Hubo un problema al subir el servicio.');
+          throw new Error('Hubo un problema con el reclamo.');
         }
     
         Alert.alert('Servicio Procesado Para Validar', 'La validación del reclamo puede demorar.', [
@@ -197,7 +266,7 @@ const GenerarReclamo = () => {
       {
         formData.append('legajo', documentoUsuario);
         formData.append('idSitio', selectedSitioId.toString());
-        formData.append('idDesperfecto', idDesperfecto);
+        formData.append('idDesperfecto', selectedDesperfectoId.toString());
         formData.append('descripcion', descripcion);
 
         const response = await fetch('http://192.168.1.17:5000/reclamos/personal/new', {
@@ -262,25 +331,33 @@ const GenerarReclamo = () => {
           ) : (
             <Text style={styles.inputs}>Cargando sitios...</Text>
           )}
-          
+        
+          {desperfectos.length > 0 ? (
+            <RNPickerSelect
+              placeholder={{ label: 'Seleccionar Desperfecto...', value: null }}
+              items={desperfectos.filter(d => d.rubro.trim() == sectorPersonal?.toString().trim()).map((desperfecto) => ({
+                label: `ID: ${desperfecto.idDesperfecto} - ${desperfecto.rubro} -${desperfecto.descripcion}`,
+                value: desperfecto.idDesperfecto,
+              }))}
+              onValueChange={(value) => setSelectedDesperfectoId(value)}
+              style={{
+                inputIOS: styles.inputs,
+                inputAndroid: styles.inputs,
+                placeholder: {
+                  color: 'gray',
+                },
+              }}
+              value={selectedDesperfectoId}
+            />
+          ) : (
+            <Text style={styles.inputs}>Cargando desperfectos...</Text>
+          )}
+
           <TextInput
             style={styles.inputs}
             placeholder="Descripcion..."
             onChangeText={setDescripcion}
             value={descripcion}
-          />
-          <TextInput
-            style={styles.inputs}
-            placeholder="Id Desperfecto.."
-            onChangeText={setIdDesperfecto}
-            value={idDesperfecto}
-          />
-
-          <TextInput
-            style={styles.inputs}
-            placeholder="Legajo del Inspector.."
-            onChangeText={setLegajo}
-            value={legajo}
           />
     
           <View style={styles.container}>
@@ -310,7 +387,9 @@ const GenerarReclamo = () => {
         </View>
       </View>
     );
-  };const styles = StyleSheet.create({
+  };
+
+  const styles = StyleSheet.create({
     publicarServicioProfesional: {
       flex: 1,
       justifyContent: 'center',

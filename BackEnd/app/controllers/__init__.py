@@ -15,5 +15,7 @@ from controllers.reclamo_controller import ReclamoController
 from controllers.servicio_controller import ServicioController
 from controllers.usuario_controller import UsuarioController, VecinoController, PersonalController
 from controllers.sitio_controller import SitioController
+from controllers.rubro_controller import RubroContoller
+from controllers.desperfecto_controller import DesperfectoController
 
 #print("Funciona Controller")
