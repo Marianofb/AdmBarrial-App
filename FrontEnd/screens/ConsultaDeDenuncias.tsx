@@ -121,7 +121,7 @@ const ConsultaDeDenuncia = () => {
       </View>
 
 
-      {personal && (
+      {!personal && !vecino &&(
       <Pressable
         style={[styles.actualizarParent, styles.actualizarLayout]}
         onPress={() => navigation.navigate("ActualizarDenuncia")}

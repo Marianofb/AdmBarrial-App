@@ -51,7 +51,7 @@ const RegistroDedenuncias = () => {
 
   const [idSitio, setIdSitio] = useState("");
   const [descripcion, setDescripcion] = useState('');
-  const [aceptarResponsabilidad, setAceptarResponsabilidad] = useState(false);
+  const [aceptarResponsabilidad, setAceptarResponsabilidad] = useState("");
   const [servicioDenunciado, setServicioDenunciado] = useState("");
   const [vecinoDenunciado, setvecinoDenunciado] = useState("");
 
@@ -97,10 +97,6 @@ const RegistroDedenuncias = () => {
 
 }, [documentoUsuario]);
 
-
-  const handleEstadoChange = (value: boolean) => {
-    setAceptarResponsabilidad(value);
-  };
 
   const cargarImagenes = async () =>  {
     await asegurarDirectorioExiste();
@@ -181,20 +177,35 @@ const RegistroDedenuncias = () => {
 
   const handleSubmit = async () => {
 
-    if (!selectedServicioId) {
-      Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
-      return;
-    }
+   
     console.log()
     try {
       
       const requestData = {
         documento: documentoUsuario,
-        aceptarResponsabilidad: aceptarResponsabilidad,
-        idSitio:selectedServicioId.toString()
-
-     
+        aceptarResponsabilidad: aceptarResponsabilidad.toString(),
+        idSitio:idSitio,
+        descripcion:descripcion,
+        servicioDenunciado:servicioDenunciado,
+        vecinoDenunciado:vecinoDenunciado
       };
+
+      const formData = new FormData();
+  
+      formData.append('documento', documentoUsuario);
+      //formData.append('aceptarResponsabilidad', aceptarResponsabilidad.toString());
+
+      //Append images
+      imagenes.forEach((imagenUri, index) => {
+        const uriParts = imagenUri.split('.');
+        const fileType = uriParts[uriParts.length - 1];
+        const fecha = new Date().getTime();
+        formData.append('files', {
+          uri: imagenUri,
+          name:  `${index}${fecha}.${fileType}`,
+          type: `image/${fileType}`,
+        } as any);
+      });
       
       console.log("REQUEST", requestData)
 
@@ -227,38 +238,23 @@ const RegistroDedenuncias = () => {
   return (
     <View style={styles.publicarServicioProfesional}>
       <Text style={styles.publicarUnServicio}>Publicar Denuncia</Text>
-      
-      <RNPickerSelect
-          placeholder={{ label: "Declaracion Jurada ...", value: null}}
-          items={[
-            { label: "Acepto La Delcaracion Jurada", value: "1" },
-            { label: "Rechazo La Delcaracion Jurada", value: "0" },
-          ]}
-          onValueChange={handleEstadoChange}
-          style={{
-            inputIOS: styles.inputs,
-            inputAndroid: styles.inputs,
-            placeholder: {
-              color: 'gray',
-            },
-          }}
-          value={aceptarResponsabilidad}
-        />
 
 
       <View style={styles.inputsGroup}>
+
         <TextInput
-          style={styles.inputs}
-          placeholder="(Documento o Nombre) vecino.."
-          onChangeText={setvecinoDenunciado}
-          value={vecinoDenunciado}
-        />
+            style={styles.inputs}
+            placeholder="Declaracion Jurada (Aceptar: 1/Rechazar: 2) .."
+            onChangeText={setAceptarResponsabilidad}
+            value={aceptarResponsabilidad}
+          />
 
         <TextInput
           style={styles.inputs}
-          placeholder="Sitio.. "
+          placeholder="Sitio.. hasta 10"
           onChangeText={setIdSitio}
           value={idSitio}
+          keyboardType="numeric"
         />
 
         <TextInput
@@ -267,6 +263,21 @@ const RegistroDedenuncias = () => {
           onChangeText={setDescripcion}
           value={descripcion}
         />
+
+      <TextInput
+          style={styles.inputs}
+          placeholder="Comercio Denunciado.."
+          onChangeText={setServicioDenunciado}
+          value={servicioDenunciado}
+        />
+
+      <TextInput
+          style={styles.inputs}
+          placeholder="Vecino Dunciar (Documento o Nombre) .."
+          onChangeText={setvecinoDenunciado}
+          value={vecinoDenunciado}
+        />
+       
        
 
           <View style={styles.container}>

@@ -50,6 +50,8 @@ class DenunciaService:
             documento=data['documento'],
             aceptaResponsabilidad=data['aceptarResponsabilidad'], 
             idSitio=data['idSitio'],
+            descripcion=data['descripcion'],
+            estado="En Proceso"
             )
         
         db.session.add(new_denuncia)

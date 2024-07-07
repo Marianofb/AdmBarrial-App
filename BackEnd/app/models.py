@@ -158,7 +158,7 @@ class Reclamo(db.Model):
     idReclamo = db.Column(db.Integer, primary_key=True)
     documento = db.Column(db.String(80), db.ForeignKey('vecinos.documento'), nullable=False)
     idSitio = db.Column(db.Integer, db.ForeignKey('sitios.idSitio'), nullable=False)
-    idDesperfecto = db.Column(db.String(80), db.ForeignKey('desperfectos.idDesperfecto'), nullable=False)
+    idDesperfecto = db.Column(db.String, db.ForeignKey('desperfectos.idDesperfecto'), nullable=False)
     descripcion = db.Column(db.String(80), nullable=False)
     estado = db.Column(db.String(80), nullable=False)
     idReclamoUnificado = db.Column(db.Integer, nullable=True)
