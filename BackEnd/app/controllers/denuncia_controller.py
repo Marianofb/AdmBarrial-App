@@ -37,11 +37,10 @@ class DenunciasContoller:
         
     @staticmethod
     def update_denuncia(id, data):
-        updated_usuario = DenunciaService.update_denuncia(id, data)
-        if updated_usuario:
-            return updated_usuario, 200
+        if DenunciaService.update_denuncia(id, data):
+             return jsonify({'exito': 'Al actualizar la denuncia'}), 200 
         
-        return "No se ha podido actualizar el usuario", 404
+        return jsonify({'error': 'Al actualizar la denuncia'}), 404 
     
     @staticmethod
     def delete_denuncia(id):

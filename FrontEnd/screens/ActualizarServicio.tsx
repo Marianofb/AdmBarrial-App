@@ -5,6 +5,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation, ParamListBase, useRoute, RouteProp } from '@react-navigation/native';
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 type RouteParams = {
   id: number; 
   nombre: string;
@@ -42,7 +45,7 @@ const ActualizarServicio = () => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/servicios/getAll');
+        const response = await fetch( URL_BASE + '/servicios/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -66,7 +69,7 @@ const ActualizarServicio = () => {
     }
 
     try {
-      const response = await fetch(`http://192.168.1.17:5000/servicios/update/${selectedServiceId}`, {
+      const response = await fetch( URL_BASE + `/servicios/update/${selectedServiceId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

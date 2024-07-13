@@ -5,6 +5,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Color, FontFamily, FontSize, Padding, Border } from "../GlobalStyles"; 
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 const CambiarContraseña = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
@@ -27,7 +30,7 @@ const CambiarContraseña = () => {
       return;
     }
     try {
-      const response = await fetch('http://192.168.1.17:5000/usuarios/cambiarClave', {
+      const response = await fetch( URL_BASE + '/usuarios/cambiarClave', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

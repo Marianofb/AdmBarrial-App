@@ -38,7 +38,7 @@ def get_denuncia_byVecino(documento):
 
 @denuncias_bp.route('new', methods=["POST"])
 def create_denuncia():
-    data = request.get_json()
+    data = request.form
     files = request.files
     return DenunciasContoller.create_denuncia(data, files)
     

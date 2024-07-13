@@ -5,6 +5,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Color, Border, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 type RouteParams = {
   documentoUsuario: string;
   nombre: string;
@@ -32,7 +35,7 @@ const ConsultaDeReclamo = () => {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/reclamos/getAll');
+        const response = await fetch( URL_BASE + '/reclamos/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -102,7 +105,7 @@ const ConsultaDeReclamo = () => {
               <Text style={styles.headerText}>Documento: {reclamos.documento}</Text>
               <Text style={styles.headerText}>Descripcion: {reclamos.descripcion}</Text>
               <Text style={styles.headerText}>ID Desperfecto: {reclamos.idDesperfecto}</Text>
-              <Text style={styles.headerText}>Legajo: {reclamos.legajo}</Text>
+              <Text style={styles.headerText}>Legajo: {reclamos.legajo === null ? 'Nulo' : reclamos.legajo}</Text>
               <Text style={styles.headerText}>Estado: {reclamos.estado}</Text>
             </View>
           ))}

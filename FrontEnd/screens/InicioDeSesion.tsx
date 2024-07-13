@@ -5,6 +5,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Color, FontFamily, FontSize, Padding, Border } from "../GlobalStyles"; 
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 const InicioDeSesion = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
@@ -25,7 +28,7 @@ const InicioDeSesion = () => {
   // Función para iniciar sesión
   const login = async () => {
     try {
-      const response = await fetch('http://192.168.1.17:5000/usuarios/login', {
+      const response = await fetch( URL_BASE + '/usuarios/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,10 +43,10 @@ const InicioDeSesion = () => {
   
       if (response.ok) {
         console.log("LOGIN OK")
-        const datosUsuario_Vecino = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/` + documento);
+        const datosUsuario_Vecino = await fetch( URL_BASE + `/usuarios/vecinos/get/` + documento);
         if (!datosUsuario_Vecino.ok) {
           console.log("ERROR VECINO")
-          const datosUsuario_Personal = await fetch(`http://192.168.1.17:5000/usuarios/personal/get/` + documento);
+          const datosUsuario_Personal = await fetch( URL_BASE + `/usuarios/personal/get/` + documento);
           if (!datosUsuario_Personal.ok) {
             console.log("Personal --> NULL")
           } else {

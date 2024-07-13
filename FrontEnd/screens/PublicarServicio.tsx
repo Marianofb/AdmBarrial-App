@@ -11,7 +11,12 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
+
 type RouteParams = {
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -34,7 +39,7 @@ const PublicarServicio = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>();
-  const { nombre, apellido, vecino, personal } = route.params || { nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "" , nombre: '', apellido: '', vecino: false , personal: false};
 
   const [tipo, setTipo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -141,7 +146,7 @@ const PublicarServicio = () => {
         } as any);
       });
   
-      const response = await fetch('http://192.168.1.17:5000/servicios/new', {
+      const response = await fetch( URL_BASE + '/servicios/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -172,6 +177,7 @@ const PublicarServicio = () => {
     <View style={styles.publicarServicioProfesional}>
       <Text style={styles.publicarUnServicio}>Publicar Servicio</Text>
       <View style={styles.inputsGroup}>
+
         <RNPickerSelect
             placeholder={{ label: "Seleccionar Tipo...", value: null}}
             items={[
@@ -188,6 +194,7 @@ const PublicarServicio = () => {
             }}
             value={tipo}
           />
+          
         <TextInput style={styles.inputs}
                    placeholder="Descripcion..."
                    onChangeText={setDescripcion}

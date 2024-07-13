@@ -5,6 +5,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation, ParamListBase, useRoute, RouteProp } from '@react-navigation/native';
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 type RouteParams = {
   id: number; 
   nombre: string;
@@ -13,11 +16,15 @@ type RouteParams = {
   personal: boolean;
 };
 
-type Servicio = {
-  idServicio: number;
-  tipo: string;
+type Denuncia = {
+  idDenuncias: number;
+  documento: string;
+  idSitio: number;
+  servicioDenunciado: number;
+  vecinoDenunciado: number;
   descripcion: string;
-  estado: boolean;
+  estado: string;
+  aceptaResponsabilidad:number
 };
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
@@ -33,21 +40,19 @@ const ActualizarDenuncia = () => {
     personal: false,
   };
 
-  const [tipo, setTipo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState<string | null>(null);
-  const [servicios, setServicios] = useState<Servicio[]>([]);
-  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
+  const [denuncias, setDenuncias] = useState<Denuncia[]>([]);
+  const [selectedDenunciaId, setSelectedDenunciaId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/servicios/getAll');
+        const response = await fetch( URL_BASE + '/denuncias/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
         const data = await response.json();
-        setServicios(data);
+        setDenuncias(data);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -60,13 +65,15 @@ const ActualizarDenuncia = () => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedServiceId) {
-      Alert.alert('Error', 'Debe seleccionar un servicio.');
+    console.log("Estado: ", estado)
+
+    if (!selectedDenunciaId) {
+      Alert.alert('Error', 'Debe seleccionar una denuncia.');
       return;
     }
 
     try {
-      const response = await fetch(`http://192.168.1.17:5000/servicios/update/${selectedServiceId}`, {
+      const response = await fetch( URL_BASE + `/denuncias/update/${selectedDenunciaId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -77,10 +84,10 @@ const ActualizarDenuncia = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Hubo un problema al actualizar el servicio.');
+        throw new Error('Hubo un problema al actualizar la denuncia.');
       }
 
-      Alert.alert('Estado Actualizado', 'El estado del servicio ha sido actualizado correctamente.', [
+      Alert.alert('Estado Actualizado', 'El estado de la denuncia ha sido actualizado correctamente.', [
         {
           text: 'OK',
           onPress: () => {
@@ -89,29 +96,29 @@ const ActualizarDenuncia = () => {
         },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al actualizar el servicio.');
+      Alert.alert('Error', 'Hubo un problema al actualizar la denuncia.');
     }
   };
 
   return (
     <View style={styles.publicarServicioProfesional}>
-      <Text style={styles.publicarUnServicio}>Actualizar Servicio</Text>
+      <Text style={styles.publicarUnServicio}>Actualizar Denuncia</Text>
       <View style={styles.inputsGroup}>
         <RNPickerSelect
-          placeholder={{ label: 'Seleccionar Servicio...', value: null }}
-          items={servicios.map((servicio) => ({
-            label: `ID: ${servicio.idServicio} - ${servicio.tipo}`,
-            value: servicio.idServicio,
+          placeholder={{ label: 'Seleccionar Denuncia...', value: null }}
+          items={denuncias.map((denuncia) => ({
+            label: `ID: ${denuncia.idDenuncias} - ${denuncia.descripcion}`,
+            value: denuncia.idDenuncias,
           }))}
-          onValueChange={(value) => setSelectedServiceId(value)}
+          onValueChange={(value) => setSelectedDenunciaId(value)}
           style={pickerSelectStyles}
-          value={selectedServiceId}
+          value={selectedDenunciaId}
         />
         <RNPickerSelect
-          placeholder={{ label: 'Seleccionar Estado...', value: null }}
+          placeholder={{ label: 'Seleccionar Estado de la Denuncia...', value: null }}
           items={[
-            { label: 'Activo', value: "1" },
-            { label: 'Cerrado', value: "0" },
+            { label: 'En Proceso', value: "En Proceso" },
+            { label: 'Finalizado', value: "Finalizado" },
           ]}
           onValueChange={handleEstadoChange}
           style={pickerSelectStyles}

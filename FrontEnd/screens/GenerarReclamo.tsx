@@ -11,6 +11,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 
 type RouteParams = {
   documentoUsuario: string;
@@ -81,7 +84,7 @@ const GenerarReclamo = () => {
 
     const fetchSitios = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/sitios/getAll');
+        const response = await fetch( URL_BASE + '/sitios/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los sitios');
         }
@@ -94,7 +97,7 @@ const GenerarReclamo = () => {
 
     const fetchRubros = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/rubros/getAll');
+        const response = await fetch( URL_BASE + '/rubros/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los rubros');
         }
@@ -107,7 +110,7 @@ const GenerarReclamo = () => {
 
     const fetchDesperfectos = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/desperfectos/getAllWithRubros');
+        const response = await fetch( URL_BASE + '/desperfectos/getAllWithRubros');
         if (!response.ok) {
           throw new Error('Error al obtener los desperfectos');
         }
@@ -121,7 +124,7 @@ const GenerarReclamo = () => {
 
     const fetchDatosPersonal = async () => {
       try {
-        const response = await fetch(`http://192.168.1.17:5000/usuarios/personal/get/` + documentoUsuario);
+        const response = await fetch( URL_BASE + `/usuarios/personal/get/` + documentoUsuario);
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -258,7 +261,7 @@ const GenerarReclamo = () => {
         formData.append('descripcion', descripcion);
         formData.append('legajo', legajo);
 
-        const response = await fetch('http://192.168.1.17:5000/reclamos/vecino/new', {
+        const response = await fetch( URL_BASE + '/reclamos/vecino/new', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -283,7 +286,7 @@ const GenerarReclamo = () => {
         formData.append('idDesperfecto', selectedDesperfectoId.toString());
         formData.append('descripcion', descripcion);
 
-        const response = await fetch('http://192.168.1.17:5000/reclamos/personal/new', {
+        const response = await fetch( URL_BASE + '/reclamos/personal/new', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

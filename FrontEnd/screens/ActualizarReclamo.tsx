@@ -5,6 +5,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation, ParamListBase, useRoute, RouteProp } from '@react-navigation/native';
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 type RouteParams = {
   id: number; 
   nombre: string;
@@ -43,7 +46,7 @@ const ActualizarReclamo = () => {
   useEffect(() => {
     const fetchReclamos = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/reclamos/getAll');
+        const response = await fetch( URL_BASE + '/reclamos/getAll');
         if (!response.ok) {
           throw new Error('Error al obtener los reclamos');
         }
@@ -76,7 +79,7 @@ const ActualizarReclamo = () => {
     const fetchCelularVecino = async (documento: string) => {
       try {
         console.log("fetchCelularVecino")
-        const response = await fetch(`http://192.168.1.17:5000/usuarios/vecinos/get/${documento}`);
+        const response = await fetch( URL_BASE + `/usuarios/vecinos/get/${documento}`);
         if (!response.ok) {
           throw new Error('Error al obtener los datos del vecino');
         }
@@ -104,7 +107,7 @@ const ActualizarReclamo = () => {
     }
 
     try {
-      const response = await fetch(`http://192.168.1.17:5000/reclamos/update/${selectedReclamoId}`, {
+      const response = await fetch( URL_BASE + `/reclamos/update/${selectedReclamoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +121,7 @@ const ActualizarReclamo = () => {
         throw new Error('Hubo un problema al actualizar el reclamo.');
       }
 
-      const enviarMsjResponse = await fetch('http://192.168.1.17:5000/reclamos/enviar_sms', {
+      const enviarMsjResponse = await fetch( URL_BASE + '/reclamos/enviar_sms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -55,6 +55,8 @@ class UsuarioService:
     @staticmethod        
     def loginPersonal():
         try:
+
+            print("HOLLLLA")
             data = request.get_json()
             documento = data.get('documento')
             contraseña = data.get('contraseña')
@@ -196,9 +198,14 @@ class VecinoService:
 
     @staticmethod
     def get_all_vecino():
-        vecinos = Vecino.query.all()
-        json_vecinos = [vecino.to_json() for vecino in vecinos]
-        return jsonify(json_vecinos)
+        try:
+            vecinos = Vecino.query.limit(100).all()  # Limit the number of records for testing
+            result = [vecino.to_json() for vecino in vecinos]
+            print(f"Fetched {len(vecinos)} vecinos successfully")
+            return jsonify(result), 200
+        except Exception as e:
+            print(f"Error fetching vecinos: {e}")
+            return jsonify({"error": "Error fetching vecinos"}), 500
 
     @staticmethod
     def get_vecino_by_id(documento):

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, FlatList } from "react-native";
+import {Image, Text, StyleSheet, View, Pressable, TextInput, Alert, TouchableOpacity, ScrollView, FlatList, } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
-
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+
+
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
 
 type RouteParams = {
   documentoUsuario: string;
@@ -29,10 +31,22 @@ type Vecino = {
   nombre: string
   apellido: string
   documento: string
+  direccion:string
+  codigoBarrio:number
+  celular:number
 };
 
+type Sitios = {
+  idSitio: number;
+  latitud: number;
+  longitud: number;
+  calle: string;
+  numero: string;
+};
 
-const direcImagenes = FileSystem.documentDirectory + "imagenesServicio/";
+type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
+
+const direcImagenes = FileSystem.documentDirectory + "imagenesDenuncias/";
 
 const asegurarDirectorioExiste = async () =>{
   const direcInfo = await FileSystem.getInfoAsync(direcImagenes);
@@ -42,61 +56,82 @@ const asegurarDirectorioExiste = async () =>{
     }
 };
 
-type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
-
 const RegistroDedenuncias = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+
   const route = useRoute<PantallasRouteProp>();
   const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "" , nombre: '', apellido: '', vecino: false , personal: false};
 
-  const [idSitio, setIdSitio] = useState("");
+  const [idSitio, setIdSitio] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [aceptarResponsabilidad, setAceptarResponsabilidad] = useState("");
-  const [servicioDenunciado, setServicioDenunciado] = useState("");
-  const [vecinoDenunciado, setvecinoDenunciado] = useState("");
-
-  
-  const [servicios, setServicios] = useState<Servicio[]>([]);
-  const [selectedServicioId, setSelectedServicioId] = useState<number | null>(null);
-  const [vecinos, setVecinos] = useState<Vecino[]>([]);
+  const [aceptarResponsabilidad, setAceptarResponsabilidad] = useState('');
+  const [servicioDenunciado, setServicioDenunciado] = useState('');
+  const [vecinoDenunciado, setvecinoDenunciado] = useState('');
 
   const[imagenes, setImagenes] = useState<string[]>([]);
   const[carga, setCarga] = useState(true);
 
-  useEffect(() => {
-  const fetchServicios = async () => {
-    try {
-      const servicios = await fetch('http://192.168.1.17:5000/servicios/getAll');
-      if (!servicios.ok) {
-        throw new Error('Error al obtener los servicios');
-      }
-      const data_servicios = await servicios.json();
-      //console.log("Servicios: ", data_servicios)
-      setServicios(data_servicios);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+   
+  const [selectedSerivicioId, setSelectedSerivicioId] = useState<number | null>(null);
+  const [servicios, setServicios] = useState<Servicio[]>([]);
 
-  const fetchVecinos = async () => {
-    try {
-      const vecinos = await fetch('http://192.168.1.17:5000/usuarios/vecinos/getAll');
-      if (!vecinos.ok) {
-        throw new Error('Error al obtener los servicios');
-      }
-      const data_vecinos = await vecinos.json();
-      //console.log("Vecinos: ", data_vecinos)
-      setVecinos(data_vecinos);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  const [selectedVecinoId, setSelectedVecinoId] = useState<number | null>(null);
+  const [vecinos, setVecinos] = useState<Vecino[]>([]);
+
+  const [sitios, setSitios] = useState<Sitios[]>([]);
+  const [selectedSitioId, setSelectedSitioId] = useState<number | null>(null);
   
-  fetchServicios();
-  //fetchVecinos();
 
-}, [documentoUsuario]);
+  useEffect(() => {
+    cargarImagenes()
 
+    const fetchSitios = async () => {
+      try {
+        const response = await fetch( URL_BASE + '/sitios/getAll');
+        if (!response.ok) {
+          throw new Error('Error al obtener los sitios');
+        }
+        const data = await response.json();
+        //console.log("Sitios Funciona")
+        setSitios(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    const fetchServicios = async () => {
+      try {
+        const response = await fetch( URL_BASE + '/servicios/getAll');
+        if (!response.ok) {
+          throw new Error('Error al obtener los servicios');
+        }
+        const data = await response.json();
+        //console.log("Servicios Funciona")
+        setServicios(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  
+    const fetchVecinos = async () => {
+      try {
+        const response = await fetch( URL_BASE + '/usuarios/vecinos/getAll');
+        if (!response.ok) {
+          throw new Error('Error al obtener los servicios');
+        }
+        const data = await response.json();
+        //console.log("Vecinos Funciona")
+        setVecinos(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    
+    fetchSitios();
+    fetchServicios();
+    fetchVecinos();
+  
+  }, [documentoUsuario]);
 
   const cargarImagenes = async () =>  {
     await asegurarDirectorioExiste();
@@ -109,11 +144,6 @@ const RegistroDedenuncias = () => {
 
   const seleccionarImagen = async (useLibrary:boolean) => {
     //console.log("Cantidad de Fotos: ", imagenes.length)
-    if (imagenes.length >= 7) {
-      Alert.alert('Límite de imágenes alcanzado', 'No puedes subir más de 7 imágenes por reclamo.');
-      return;
-    }
-
     let result;
 
     const options: ImagePicker.ImagePickerOptions ={
@@ -173,143 +203,194 @@ const RegistroDedenuncias = () => {
     </View>
     );
   };
-
-
+  
   const handleSubmit = async () => {
-
-   
-    console.log()
     try {
-      
-      const requestData = {
-        documento: documentoUsuario,
-        aceptarResponsabilidad: aceptarResponsabilidad.toString(),
-        idSitio:idSitio,
-        descripcion:descripcion,
-        servicioDenunciado:servicioDenunciado,
-        vecinoDenunciado:vecinoDenunciado
-      };
+      if (!selectedSitioId || !selectedSerivicioId || !selectedVecinoId) {
+        Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
+        return;
+      }
 
       const formData = new FormData();
   
       formData.append('documento', documentoUsuario);
-      //formData.append('aceptarResponsabilidad', aceptarResponsabilidad.toString());
+      formData.append('aceptarResponsabilidad', aceptarResponsabilidad);
+      formData.append('idSitio', selectedSitioId.toString());
+      formData.append('servicioDenunciado', selectedSerivicioId.toString());
+      formData.append('vecinoDenunciado', selectedVecinoId.toString());
+      formData.append('descripcion', descripcion);
 
-      //Append images
-      imagenes.forEach((imagenUri, index) => {
-        const uriParts = imagenUri.split('.');
-        const fileType = uriParts[uriParts.length - 1];
-        const fecha = new Date().getTime();
-        formData.append('files', {
-          uri: imagenUri,
-          name:  `${index}${fecha}.${fileType}`,
-          type: `image/${fileType}`,
-        } as any);
-      });
-      
-      console.log("REQUEST", requestData)
-
-      const response = await fetch('http://192.168.1.17:5000/denuncias/new', {
+    
+      const response = await fetch( URL_BASE + '/denuncias/new', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          // Añade otros headers si son necesarios
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(requestData),
+        body: formData,
       });
-  
+
       if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error('Hubo un problema al crear la denuncia. Detalles: ' + errorData);
+        throw new Error('Hubo un problema al subir la denuncia.');
       }
   
-      const responseData = await response.json();
-      Alert.alert('Denuncia creada!', 'La denuncia ha sido creada exitosamente.', [
-        {
-          text: 'OK'
-        },
+      Alert.alert('EXITO: ', 'La denuncia se subio al sistema.', [
+        { text: 'OK' }
       ]);
     } catch (error) {
-      console.error('Error al procesar la denuncia:', error);
-      Alert.alert('Error', 'Hubo un error al procesar la denuncia. Por favor, inténtalo nuevamente.');
+      Alert.alert('Error', 'Hubo un problema al procesar la denuncia.');
+      console.error('Error submitting denuncia:', error);
     }
   };
 
+  const handleEstadoChange = (value: string) => {
+    setAceptarResponsabilidad(value);
+  };
+
   return (
+      
     <View style={styles.publicarServicioProfesional}>
-      <Text style={styles.publicarUnServicio}>Publicar Denuncia</Text>
-
-
+      <Text style={styles.publicarUnServicio}>Crear Denuncia</Text>
       <View style={styles.inputsGroup}>
 
-        <TextInput
-            style={styles.inputs}
-            placeholder="Declaracion Jurada (Aceptar: 1/Rechazar: 2) .."
-            onChangeText={setAceptarResponsabilidad}
+        <RNPickerSelect
+            placeholder={{ label: "Seleccionar Tipo...", value: null}}
+            items={[
+              { label: "Acepto", value: "1" },
+              { label: "Rechaza", value: "0" },
+            ]}
+            onValueChange={handleEstadoChange}
+            style={{
+              inputIOS: styles.inputs,
+              inputAndroid: styles.inputs,
+              placeholder: {
+                color: 'gray',
+              },
+            }}
             value={aceptarResponsabilidad}
           />
 
-        <TextInput
-          style={styles.inputs}
-          placeholder="Sitio.. hasta 10"
-          onChangeText={setIdSitio}
-          value={idSitio}
-          keyboardType="numeric"
-        />
+          {sitios.length > 0 ? (
+            <RNPickerSelect
+              placeholder={{ label: 'Seleccionar Sitio...', value: null }}
+              items={sitios.map((sitio) => ({
+                label: `ID: ${sitio.idSitio} - ${sitio.calle}`,
+                value: sitio.idSitio,
+              }))}
+              onValueChange={(value) => setSelectedSitioId(value)}
+              style={{
+                inputIOS: styles.inputs,
+                inputAndroid: styles.inputs,
+                placeholder: {
+                  color: 'gray',
+                },
+              }}
+              value={selectedSitioId}
+            />
+          ) : (
+            <Text style={styles.inputs}>Cargando sitios...</Text>
+          )}
 
-        <TextInput
-          style={styles.inputs}
-          placeholder="Descripcion.."
-          onChangeText={setDescripcion}
-          value={descripcion}
-        />
+          {servicios.length > 0 ? (
+            <RNPickerSelect
+              placeholder={{ label: 'Seleccionar Servicio a Denunciar...', value: null }}
+              items={servicios.map((servicio) => ({
+                label: `ID: ${servicio.idServicio} - ${servicio.descripcion}`,
+                value: servicio.idServicio,
+              }))}
+              onValueChange={(value) => setSelectedSerivicioId(value)}
+              style={{
+                inputIOS: styles.inputs,
+                inputAndroid: styles.inputs,
+                placeholder: {
+                  color: 'gray',
+                },
+              }}
+              value={selectedSerivicioId}
+            />
+          ) : (
+            <Text style={styles.inputs}>Cargando servicios...</Text>
+          )}
 
-      <TextInput
-          style={styles.inputs}
-          placeholder="Comercio Denunciado.."
-          onChangeText={setServicioDenunciado}
-          value={servicioDenunciado}
-        />
+          {vecinos.length > 0 ? (
+            <RNPickerSelect
+              placeholder={{ label: 'Seleccionar Vecino a Denunciar...', value: null }}
+              items={vecinos.map((vecino) => ({
+                label: `ID: ${vecino.documento} - Nombre: ${vecino.nombre}, ${vecino.apellido}`,
+                value: vecino.documento,
+              }))}
+              onValueChange={(value) => setSelectedVecinoId(value)}
+              style={{
+                inputIOS: styles.inputs,
+                inputAndroid: styles.inputs,
+                placeholder: {
+                  color: 'gray',
+                },
+              }}
+              value={selectedVecinoId}
+            />
+          ) : (
+            <Text style={styles.inputs}>Cargando vecinos...</Text>
+          )}
+          
+        <TextInput style={styles.inputs}
+                   placeholder="Descripcion..."
+                   onChangeText={setDescripcion}
+                   value={descripcion} />
 
-      <TextInput
-          style={styles.inputs}
-          placeholder="Vecino Dunciar (Documento o Nombre) .."
-          onChangeText={setvecinoDenunciado}
-          value={vecinoDenunciado}
-        />
-       
-       
-
-          <View style={styles.container}>
+        <View style={styles.container}>
             <TouchableOpacity style={styles.button} onPress={() => seleccionarImagen(true)}>
               <Text style={styles.buttonText}>Seleccionar Fotos del Album</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => seleccionarImagen(false)}>
               <Text style={styles.buttonText}>Abrir Camara</Text>
             </TouchableOpacity>
-          </View>
-    
-          <FlatList 
-            data={imagenes} 
-            renderItem={renderizarImagen} 
-            numColumns={4} 
-            keyExtractor={(item, index) => index.toString()} 
-          />
-
-      </View>
-  
-      <View style={styles.bottomActions}>
-          <Pressable
-            style={styles.publicarButton} // Adjust styles as needed for "Publicar"
-            onPress={handleSubmit}
-          >
-            <Text style={styles.publicarButtonText}>Publicar</Text>
-          </Pressable>
         </View>
+        
+        <FlatList 
+          data={imagenes} 
+          renderItem={renderizarImagen} 
+          numColumns={4} 
+          keyExtractor={(item, index) => index.toString()} 
+        />
+      </View>
+      <Pressable
+        style={styles.publicarButton}
+        onPress={handleSubmit}
+      >
+          <Text style={styles.publicarButtonText}>Crear</Text>
+      </Pressable>
 
     </View>
+
+    
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: Color.neutral400,
+    borderRadius: Border.br_base,
+    backgroundColor: Color.colorWhite1,
+    color: Color.colorBlack,
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: Color.neutral400,
+    borderRadius: Border.br_base,
+    backgroundColor: Color.colorWhite1,
+    color: Color.colorBlack,
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});
 
 
 const styles = StyleSheet.create({
@@ -353,7 +434,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   trashButton: {
-    backgroundColor: '#FF6347', // Adjust color for "Borrar"
+    backgroundColor: '#FF6347', // or any color you prefer for delete
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 5,
@@ -364,7 +445,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   publicarButton: {
-    backgroundColor: '#1E90FF', // Adjust color for "Publicar"
+    backgroundColor: '#1E90FF', // or any color you prefer for publish
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 5,

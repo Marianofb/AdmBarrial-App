@@ -5,6 +5,10 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navigation/native";
 import { Color, Border, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+import CONFIG from "../config.json"
+import { Float } from 'react-native/Libraries/Types/CodegenTypes';
+const URL_BASE = CONFIG.BASE_URL
+
 type RouteParams = {
   documentoUsuario: string;
   nombre: string;
@@ -17,9 +21,11 @@ type Denuncia = {
   idDenuncias: number;
   documento: string;
   idSitio: number;
+  servicioDenunciado: number;
+  vecinoDenunciado: number;
   descripcion: string;
-  estado: number;
-  aceptarResponsabilidad:number
+  estado: boolean;
+  aceptaResponsabilidad:number
 };
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
@@ -29,9 +35,9 @@ const ConsultaDeDenuncia = () => {
   const [denuncias, setDenuncias] = useState<Denuncia[]>([]); // Estado para almacenar los servicios recibidos
 
   useEffect(() => {
-    const fetchServicios = async () => {
+    const fetchDenuncias = async () => {
       try {
-        const response = await fetch('http://192.168.1.17:5000/denuncias/getAll');
+        const response = await fetch(URL_BASE + "/denuncias/getAll");
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -44,7 +50,8 @@ const ConsultaDeDenuncia = () => {
       }
     };
     
-    fetchServicios();
+    fetchDenuncias();
+
 }, []); // Add an empty dependency array to run the effect only once
 
 
@@ -106,14 +113,17 @@ const ConsultaDeDenuncia = () => {
       <View style={styles.inputsParent}>
         <View style={[styles.inputs, styles.inputsBorder  ]}>
         <ScrollView>
-          {denunciasFiltradas.map(denuncias => (
-            <View key={denuncias.idDenuncias} style={styles.servicioContainer}>
-              <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize:16 }}>ID: {denuncias.idDenuncias}</Text>
-              <Text style={styles.headerText}>Documento: {denuncias.documento}</Text>
-              <Text style={styles.headerText}>Descripcion: {denuncias.descripcion}</Text>
-              <Text style={styles.headerText}>ID Sitio: {denuncias.idSitio}</Text>
-              <Text style={styles.headerText}>Acepta Responsabildiad: {denuncias.aceptarResponsabilidad}</Text>
-              <Text style={styles.headerText}>Estado: {denuncias.estado}</Text>
+          {denunciasFiltradas.map(denuncia => (
+            //console.log(denuncia),
+            <View key={denuncia.idDenuncias} style={styles.servicioContainer}>
+              <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize:16 }}>ID: {denuncia.idDenuncias}</Text>
+              <Text style={styles.headerText}>Origen: {denuncia.documento}</Text>
+              <Text style={styles.headerText}>Declaracion Jurada: {denuncia.aceptaResponsabilidad ? 'Acepta' : 'Rechaza'}</Text>
+              <Text style={styles.headerText}>Descripcion: {denuncia.descripcion}</Text>
+              <Text style={styles.headerText}>ID Sitio: {denuncia.idSitio}</Text>
+              <Text style={styles.headerText}>Vecino Denunciado: {denuncia.vecinoDenunciado}</Text>
+              <Text style={styles.headerText}>Servicio Denunciado: {denuncia.servicioDenunciado}</Text>
+              <Text style={styles.headerText}>Estado: {denuncia.estado}</Text>
             </View>
           ))}
         </ScrollView>
@@ -121,13 +131,13 @@ const ConsultaDeDenuncia = () => {
       </View>
 
 
-      {!personal && !vecino &&(
+      {personal &&(
       <Pressable
         style={[styles.actualizarParent, styles.actualizarLayout]}
         onPress={() => navigation.navigate("ActualizarDenuncia")}
       >
         <View style={[styles.otroActualizar, styles.actualizarLayout]}>
-          <Text style={styles.actualizar}>Cambiar Estado</Text>
+          <Text style={styles.actualizar}>Actualizar</Text>
         </View>
       </Pressable>
       )}
@@ -168,7 +178,7 @@ const styles = StyleSheet.create({
   },
   
   actualizar: {
-    fontSize: 25,
+    fontSize: 20,
     lineHeight: 35,
     textAlign: "justify",
     width: 120,

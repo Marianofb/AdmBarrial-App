@@ -48,10 +48,13 @@ class DenunciaService:
     def create_denuncia(data, files):
         new_denuncia = Denuncia(
             documento=data['documento'],
-            aceptaResponsabilidad=data['aceptarResponsabilidad'], 
+            aceptaResponsabilidad = data['aceptarResponsabilidad'], 
             idSitio=data['idSitio'],
+            servicioDenunciado=data['servicioDenunciado'],
+            vecinoDenunciado=data['vecinoDenunciado'],
             descripcion=data['descripcion'],
-            estado="En Proceso"
+            estado= "En Proceso"
+
             )
         
         db.session.add(new_denuncia)
@@ -75,11 +78,7 @@ class DenunciaService:
     def update_denuncia(id, data):
         updated_denuncia = Denuncia.query.get(id)
         if updated_denuncia:
-            updated_denuncia.documento = data.get('documento', updated_denuncia.documento)
-            updated_denuncia.idSitio = data.get('idSitio', updated_denuncia.idSitio)
-            updated_denuncia.descripcion = data.get('descripcion', updated_denuncia.descripcion)
-            updated_denuncia.estado = data.get('estado', updated_denuncia.estado)
-            updated_denuncia.aceptaResponsabilidad = data.get('aceptaResponsabilidad', updated_denuncia.aceptaResponsabilidad)
+            updated_denuncia.estado = data["estado"]
             db.session.commit()
             return jsonify(updated_denuncia.to_json()), 200
         else:

@@ -5,6 +5,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Border, Color, FontFamily, Padding, FontSize } from "../GlobalStyles";
 
+import CONFIG from "../config.json"
+const URL_BASE = CONFIG.BASE_URL
+
 const Vecino_GenerarClave = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
@@ -15,7 +18,7 @@ const Vecino_GenerarClave = () => {
   const genrarClave = async () => {
 
     try {
-      const response = await fetch('http://192.168.1.17:5000/usuarios/vecinos/generarClave', {
+      const response = await fetch( URL_BASE + '/usuarios/vecinos/generarClave', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
