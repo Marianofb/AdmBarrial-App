@@ -14,6 +14,7 @@ import * as FileSystem from 'expo-file-system';
 import CONFIG from "../config.json"
 const URL_BASE = CONFIG.BASE_URL
 
+import * as Network from 'expo-network';
 
 type RouteParams = {
   documentoUsuario: string;
@@ -54,7 +55,6 @@ const asegurarDirectorioExiste = async () =>{
     }
 };
 
-
 const GenerarReclamo = () => {
 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -79,8 +79,59 @@ const GenerarReclamo = () => {
   const[imagenes, setImagenes] = useState<string[]>([]);
   const[carga, setCarga] = useState(true);
 
-    useEffect(() => {
-      cargarImagenes();
+  const [networkType, setNetworkType] = useState<string | null>(null);
+
+
+
+  const controlRed = async () => {
+    const networkState = await Network.getNetworkStateAsync();
+    const { type } = networkState;
+
+
+    if (type === Network.NetworkStateType.WIFI) {
+      setNetworkType("WiFi");
+    } else if (type === Network.NetworkStateType.CELLULAR) {
+      setNetworkType("4G");
+    } else {
+      setNetworkType("No conectado");
+    }
+
+    //console.log("controlRed => ", networkType)
+  };  
+
+  const confirmarUsoDeDatos = () => {
+    Alert.alert(
+      "Usar datos móviles",
+      "Estás conectado a una red móvil. ¿Deseas continuar usando tus datos móviles?",
+      [
+        { text: "No", onPress: () =>  navigation.navigate("GenerarReclamo", 
+                                                            { documentoUsuario: documentoUsuario,
+                                                            nombre: nombre,
+                                                            apellido:apellido,
+                                                            vecino : vecino,
+                                                            personal : personal})},
+        {text: 'Si', onPress: () =>  {handleSubmit() }} 
+      ]
+    );
+
+  };
+
+  const controlUsoDatos = async () =>{
+
+    controlRed();
+
+    console.log("controlUsoDatos => ", networkType)
+    if (networkType?.toString().trim() === "4G") {
+      confirmarUsoDeDatos();
+      return;
+    }
+  }
+  
+
+  useEffect(() => {
+    
+    controlUsoDatos()
+    cargarImagenes();
 
     const fetchSitios = async () => {
       try {
@@ -155,8 +206,10 @@ const GenerarReclamo = () => {
       {
         fetchDesperfectos()
       }
-    
 
+      const intervalId = setInterval(controlRed, 3000);
+      return () => clearInterval(intervalId);
+      
   }, [documentoUsuario, sectorPersonal]);
 
   
@@ -235,17 +288,10 @@ const GenerarReclamo = () => {
         <Ionicons.Button name="trash" onPress={() => eliminarImagen(item)}/>
     </View>
     );
-  };
+  }
 
   const handleSubmit = async () => {
-    
-    //if (!selectedSitioId || !selectedDesperfectoId) {
-     // Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
-     // return;
-   // }
 
-    try {
-      
       if (!selectedSitioId || !selectedDesperfectoId) {
         Alert.alert('Error', 'Debe seleccionar un sitio y un desperfecto');
         return;
@@ -316,11 +362,7 @@ const GenerarReclamo = () => {
         } as any);
       });
 
-      
-    } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al procesar el reclamo.');
-      console.error('Error submitting reclamo:', error);
-    }
+ 
   };
 
   return (

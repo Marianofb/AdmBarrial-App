@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import { Image } from "expo-image";
 import { StyleSheet, View, Text, Pressable, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -6,8 +6,33 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Color, Border, FontSize, FontFamily, Padding } from "../GlobalStyles";
 
+import * as Network from 'expo-network';
+
 const Principal = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+  const [networkType, setNetworkType] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controlWIFI = async () => {
+      const networkState = await Network.getNetworkStateAsync();
+      const { type } = networkState;
+
+      console.log("Tipo de conexión: ", type);
+
+      if (type === Network.NetworkStateType.WIFI) {
+        setNetworkType("WiFi");
+      } else if (type === Network.NetworkStateType.CELLULAR) {
+        setNetworkType("4G");
+      } else {
+        setNetworkType("No conectado");
+      }
+    };
+
+    //const intervalId = setInterval(controlWIFI, 3000);
+    //return () => clearInterval(intervalId);
+    
+    controlWIFI()
+  }, []);
 
   return (
     <View style={styles.principal}>
@@ -40,9 +65,7 @@ const Principal = () => {
           </View>
         </Pressable>
       </View>
-      <View style={styles.ios1}>
-        <View style={styles.homeIndicator} />
-      </View>
+
     </View>
   );
 };
