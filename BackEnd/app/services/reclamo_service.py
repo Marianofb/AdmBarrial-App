@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from flask import jsonify, make_response, request
+from datetime import datetime
 
 import sys
 from os.path import dirname, abspath
@@ -14,7 +15,7 @@ app_dir = dirname(current_dir)
 sys.path.append(app_dir)
 
 from config import db
-from models import Reclamo, ReclamoFoto
+from models import Reclamo, ReclamoFoto, MovimientoReclamo
 
 class ReclamoService:
     def get_all_reclamos():
@@ -58,6 +59,16 @@ class ReclamoService:
         db.session.add(new_reclamo)
         db.session.commit()
 
+        new_movimiento_reclamo = MovimientoReclamo(
+            idReclamo = new_reclamo.idReclamo,
+            responsable = new_reclamo.documento,
+            causa = new_reclamo.descripcion,
+            fecha = datetime.now()
+        )
+
+        db.session.add(new_movimiento_reclamo)
+        db.session.commit()
+
         fotos = []
         for file in files.getlist('files'):
             filename = file.filename
@@ -88,6 +99,16 @@ class ReclamoService:
         db.session.add(new_reclamo)
         db.session.commit()
 
+        new_movimiento_reclamo = MovimientoReclamo(
+            idReclamo = new_reclamo.idReclamo,
+            responsable = new_reclamo.legajo,
+            causa = new_reclamo.descripcion,
+            fecha = datetime.now()
+        )
+
+        db.session.add(new_movimiento_reclamo)
+        db.session.commit()
+
         fotos = []
         for file in files.getlist('files'):
             filename = file.filename
@@ -110,6 +131,17 @@ class ReclamoService:
         if updated_reclamo:
             updated_reclamo.estado = data['estado']
             db.session.commit()
+
+            new_movimiento_reclamo = MovimientoReclamo(
+            idReclamo = updated_reclamo.idReclamo,
+            responsable =  data['documentoUsuario'],
+            causa = updated_reclamo.estado,
+            fecha = datetime.now()
+            )
+
+            db.session.add(new_movimiento_reclamo)
+            db.session.commit()
+
         return jsonify(updated_reclamo.to_json()), 200
     
     @staticmethod

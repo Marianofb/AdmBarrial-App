@@ -9,12 +9,13 @@ import CONFIG from "../config.json"
 const URL_BASE = CONFIG.BASE_URL
 
 type RouteParams = {
-  id: number; 
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
   personal: boolean;
 };
+
 type Reclamo = {
   documento: string;
   idReclamo: number;
@@ -28,16 +29,6 @@ type Reclamo = {
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
 const ActualizarReclamo = () => {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const route = useRoute<PantallasRouteProp>();
-  const { id, nombre, apellido, vecino, personal } = route.params || {
-    id: 0,
-    nombre: '',
-    apellido: '',
-    vecino: false,
-    personal: false,
-  };
-
   const [estado, setEstado] = useState<string | null>(null);
   const [reclamos, setReclamos] = useState<Reclamo[]>([]);
   const [selectedReclamoId, setSelectedReclamoId] = useState<number | null>(null);
@@ -57,7 +48,13 @@ const ActualizarReclamo = () => {
       }
     };
     fetchReclamos();
+    //console.log("ACTUALIZAR RECLAMO: Documento Usuario" , documentoUsuario)
   }, []);
+
+  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+
+  const route = useRoute<PantallasRouteProp>();
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   const handleEstadoChange = (value: string) => {
     setEstado(value);
@@ -113,7 +110,8 @@ const ActualizarReclamo = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          estado
+          estado,
+          documentoUsuario
         }),
       });
 
@@ -127,7 +125,7 @@ const ActualizarReclamo = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mensaje: `El estado de tu reclamo ID: ${selectedReclamoId} cambió a ESTAOD: ${estado}`,
+          mensaje: `El estado de tu reclamo ID: ${selectedReclamoId} cambió a ESTADO: ${estado}`,
           celular: celularVecino,
         }),
       });

@@ -49,6 +49,7 @@ const ConsultaDeReclamo = () => {
     };
     
     fetchServicios();
+    //console.log("CONSULTA RECLAMO Documento Usuario" , documentoUsuario)
 }, []); // Add an empty dependency array to run the effect only once
 
 
@@ -56,7 +57,7 @@ const ConsultaDeReclamo = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>();
-  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || {documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   const handlePress = () => {
     if (vecino) {
@@ -116,7 +117,7 @@ const ConsultaDeReclamo = () => {
       {personal && (
       <Pressable
         style={[styles.actualizarParent, styles.actualizarLayout]}
-        onPress={() => navigation.navigate("AcualizarReclamo")}
+        onPress={() => navigation.navigate("AcualizarReclamo", { documentoUsuario, nombre, apellido, vecino, personal })}
       >
         <View style={[styles.otroActualizar, styles.actualizarLayout]}>
           <Text style={styles.actualizar}>Cambiar Estado</Text>

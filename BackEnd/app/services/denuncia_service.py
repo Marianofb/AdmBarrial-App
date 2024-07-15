@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from flask import jsonify, make_response, request
+from datetime import datetime
 
 import sys
 from os.path import dirname, abspath
@@ -14,7 +15,7 @@ app_dir = dirname(current_dir)
 sys.path.append(app_dir)
 
 from config import db
-from models import Denuncia, DenunciaFoto
+from models import Denuncia, DenunciaFoto, MovimientoDenuncia
 
 class DenunciaService:
     @staticmethod
@@ -59,6 +60,16 @@ class DenunciaService:
         
         db.session.add(new_denuncia)
         db.session.commit()
+
+        new_movimiento_denuncia = MovimientoDenuncia(
+            idDenuncia = new_denuncia.idDenuncias,
+            responsable = new_denuncia.documento,
+            causa = new_denuncia.descripcion,
+            fecha = datetime.now()
+            )
+
+        db.session.add(new_movimiento_denuncia)
+        db.session.commit()
        
         fotos = []
         for file in files.getlist('files'):
@@ -80,6 +91,17 @@ class DenunciaService:
         if updated_denuncia:
             updated_denuncia.estado = data["estado"]
             db.session.commit()
+
+            new_movimiento_denuncia = MovimientoDenuncia(
+            idDenuncia = updated_denuncia.idDenuncias,
+            responsable = data["documentoUsuario"],
+            causa = updated_denuncia.estado,
+            fecha = datetime.now()
+            )
+
+            db.session.add(new_movimiento_denuncia)
+            db.session.commit()
+            
             return jsonify(updated_denuncia.to_json()), 200
         else:
             return jsonify({"error": "Denuncia no encontrada"}), 404

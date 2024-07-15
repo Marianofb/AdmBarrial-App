@@ -114,7 +114,27 @@ class DenunciaFoto(db.Model):
             'denuncia_id': self.denuncia_id,
             'filename': self.filename
         }
+class MovimientoDenuncia(db.Model):
+    __tablename__ = 'movimientosDenuncia'
+    idMovimiento = db.Column(db.Integer, primary_key=True)
+    idDenuncia = db.Column(db.Integer, db.ForeignKey('denuncias.idDenuncias'), nullable=False)
+    responsable = db.Column(db.String(255), nullable=False)
+    causa = db.Column(db.String(255), nullable=False)
+    fecha = db.Column(db.Date, nullable=False)
     
+    def __repr__(self):
+        return f'<MovimientoDenuncia id={self.idMovimiento} responsable={self.responsable}>'
+    
+    def to_json(self):
+        return {
+            'idMovimiento': self.idMovimiento,
+            'idDenuncia': self.idDenuncia,
+            'responsable': self.responsable,
+            'causa': self.causa,
+            'fecha': self.fecha.isoformat()  # Convertir fecha a string en formato ISO
+        }
+
+
 class Sitio(db.Model):
     __tablename__ = 'sitios'
     idSitio = db.Column(db.Integer, primary_key=True)
@@ -202,8 +222,8 @@ class MovimientoReclamo(db.Model):
     __tablename__ = 'movimientosReclamo'
     idMovimiento = db.Column(db.Integer, primary_key=True)
     idReclamo = db.Column(db.Integer, db.ForeignKey('reclamos.idReclamo'), nullable=False)
-    responsable = db.Column(db.String(80), nullable=False)
-    causa = db.Column(db.String(80), nullable=False)
+    responsable = db.Column(db.String(255), nullable=False)
+    causa = db.Column(db.String(255), nullable=False)
     fecha = db.Column(db.Date, nullable=False)
     
     def __repr__(self):

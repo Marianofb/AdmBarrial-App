@@ -9,7 +9,7 @@ import CONFIG from "../config.json"
 const URL_BASE = CONFIG.BASE_URL
 
 type RouteParams = {
-  id: number; 
+  documentoUsuario: string;
   nombre: string;
   apellido: string;
   vecino: boolean;
@@ -32,8 +32,8 @@ type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 const ActualizarDenuncia = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const route = useRoute<PantallasRouteProp>();
-  const { id, nombre, apellido, vecino, personal } = route.params || {
-    id: 0,
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || {
+    documentoUsuario: "",
     nombre: '',
     apellido: '',
     vecino: false,
@@ -79,7 +79,8 @@ const ActualizarDenuncia = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          estado
+          estado,
+          documentoUsuario
         }),
       });
 

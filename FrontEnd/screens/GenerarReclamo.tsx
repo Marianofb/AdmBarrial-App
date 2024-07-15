@@ -11,11 +11,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
+import * as Network from 'expo-network';
+
 import CONFIG from "../config.json"
 const URL_BASE = CONFIG.BASE_URL
 
-import * as Network from 'expo-network';
-import { navigate } from '@react-navigation/routers/lib/typescript/src/CommonActions';
+
 
 type RouteParams = {
   documentoUsuario: string;
@@ -46,7 +47,7 @@ type Desperfectos = {
 
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
-const direcImagenes = FileSystem.documentDirectory + "imagenesServicio/";
+const direcImagenes = FileSystem.documentDirectory + "imagenesReclamo/";
 
 const asegurarDirectorioExiste = async () =>{
   const direcInfo = await FileSystem.getInfoAsync(direcImagenes);
@@ -83,8 +84,6 @@ const GenerarReclamo = () => {
   const [confirmarUsoDatos, setConfirmarUsoDatos] = useState<number | null>(null);
   const [tipoRed, setTipoRed] = useState<string | null>(null);
   
-
-
 
   const setNetworkType = async () => {
     const networkState = await Network.getNetworkStateAsync();

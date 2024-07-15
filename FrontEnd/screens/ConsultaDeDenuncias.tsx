@@ -51,7 +51,6 @@ const ConsultaDeDenuncia = () => {
     };
     
     fetchDenuncias();
-
 }, []); // Add an empty dependency array to run the effect only once
 
 
@@ -134,7 +133,7 @@ const ConsultaDeDenuncia = () => {
       {personal &&(
       <Pressable
         style={[styles.actualizarParent, styles.actualizarLayout]}
-        onPress={() => navigation.navigate("ActualizarDenuncia")}
+        onPress={() => navigation.navigate("ActualizarDenuncia", { documentoUsuario, nombre, apellido, vecino, personal })}
       >
         <View style={[styles.otroActualizar, styles.actualizarLayout]}>
           <Text style={styles.actualizar}>Actualizar</Text>

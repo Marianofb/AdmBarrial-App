@@ -20,7 +20,7 @@ const MenuPrincipal_Personal = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>(); // Usar el tipo MenuPrincipalRouteProp para route
-  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || {documentoUsuario:"", nombre: '', apellido: '', vecino: false, personal: false };
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
 
   //console.log("MENU PRINCIPAL Nombre: ", nombre, " / Apellido: ", apellido)
   //console.log("MENU PRINCIPAL Vecino: ", vecino, " / Apellido: ", personal)
