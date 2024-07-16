@@ -7,6 +7,35 @@
 	},
 	"item": [
 		{
+			"name": "Login Usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"documento\": \"DNI100000006\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "GET allVecino",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -89,7 +118,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"documento\": \"DNI100000006\",\r\n    \"nombre\": \"FEDERICO\",\r\n    \"apellido\": \"RICARDO\",\r\n    \"direccion\": \"Juncal\",\r\n    \"codigoBarrio\": 1\r\n}",
+					"raw": "{\r\n    \"documento\": \"DNI1000000014\",\r\n    \"nombre\": \"Ricarod\",\r\n    \"apellido\": \"Juarez\",\r\n    \"direccion\": \"Aca\",\r\n    \"codigoBarrio\": 1\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -107,6 +136,36 @@
 						"usuarios",
 						"vecinos",
 						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST vecino_gnrarClave",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"documento\":\"DNI100000000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/usuarios/vecinos/generarClave",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usuarios",
+						"vecinos",
+						"generarClave"
 					]
 				}
 			},
@@ -345,16 +404,42 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"documento\": \"DNI100000000\",\r\n    \"idSitio\": 1,\r\n    \"idDesperfecto\": 2,\r\n    \"descripcion\": \"Descripción del reclamo\",\r\n    \"estado\": \"pendiente\",\r\n    //\"idReclamoUnificado\": ,  // Este campo es opcional\r\n    \"legajo\": 1\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "documento",
+							"value": "00000000",
+							"type": "text"
+						},
+						{
+							"key": "idSitio",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "idDesperfecto",
+							"value": "11",
+							"type": "text"
+						},
+						{
+							"key": "descripcion",
+							"value": "probando",
+							"type": "text"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "postman-cloud:///1ef397d6-8ccc-4440-be85-8b38eb60364a"
+						},
+						{
+							"key": "legajo",
+							"value": "2",
+							"type": "text"
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:5000/reclamos/new",
+					"raw": "http://localhost:5000/reclamos/personal/new",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -362,7 +447,38 @@
 					"port": "5000",
 					"path": [
 						"reclamos",
+						"personal",
 						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reclamo",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"estado\": \"resuelto\"\r\n}\r\n   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/reclamos/update/1079",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reclamos",
+						"update",
+						"1079"
 					]
 				}
 			},
@@ -374,7 +490,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/servicios/get/1",
+					"raw": "http://localhost:5000/servicios/get/2022",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -383,7 +499,7 @@
 					"path": [
 						"servicios",
 						"get",
-						"1"
+						"2022"
 					]
 				}
 			},
@@ -404,6 +520,110 @@
 					"path": [
 						"servicios",
 						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servicio_foto",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://localhost:5000//servicios/getFoto/1013",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"",
+						"servicios",
+						"getFoto",
+						"1013"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST servicio",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "tipo",
+							"value": "adqeqeqqweqweqwe",
+							"type": "text"
+						},
+						{
+							"key": "descripcion",
+							"value": "ADAWDW",
+							"type": "text"
+						},
+						{
+							"key": "estado",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "postman-cloud:///1ef38009-0efe-4110-b2bb-36f4ca645e76"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5000/servicios/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"servicios",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servicio",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"estado\": \"1\"\r\n}\r\n   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/servicios/update/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"servicios",
+						"update",
+						"1"
 					]
 				}
 			},
@@ -445,6 +665,238 @@
 						"denuncias",
 						"getBySitio",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET denunciaById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/denuncias/get/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"denuncias",
+						"get",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST denuncia",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "documento",
+							"value": "DNI28000429",
+							"type": "text"
+						},
+						{
+							"key": "aceptarResponsabilidad",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "idSitio",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "servicioDenunciado",
+							"value": "2039",
+							"type": "text"
+						},
+						{
+							"key": "vecinoDenunciado",
+							"value": "DNI28000429",
+							"type": "text"
+						},
+						{
+							"key": "descripcion",
+							"value": "FormData",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5000/denuncias/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"denuncias",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allRubros",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/rubros/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"rubros",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "oneRubro",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/rubros/get/27",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"rubros",
+						"get",
+						"27"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allDesperfectos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/desperfectos/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"desperfectos",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "oneDesperfecto",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/desperfectos/get/46",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"desperfectos",
+						"get",
+						"46"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "oneSitio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/sitios/get/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"sitios",
+						"get",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllRubros",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/desperfectos/getAllWithRubros",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"desperfectos",
+						"getAllWithRubros"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "actualizarDenuncia",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"estado\" : \"POSTMAN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.1.3:5000/denuncias/update/1109",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"1",
+						"3"
+					],
+					"port": "5000",
+					"path": [
+						"denuncias",
+						"update",
+						"1109"
 					]
 				}
 			},
