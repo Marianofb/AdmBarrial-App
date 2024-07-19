@@ -143,32 +143,21 @@ const ConsultaDeDenuncia = () => {
 
       {vecino && (
         <Pressable
+        style={[styles.actualizarParent2, styles.actualizarLayout]}
         onPress={() => navigation.navigate("RegistroDeDenuncias", { documentoUsuario, nombre, apellido, vecino, personal })}
         >
-          <Image
-            style={styles.addIcon}
-            contentFit="cover"
-            source={require("../assets/add.png")}
-          />
+          <View style={[styles.otroActualizar, styles.actualizarLayout]}>
+          <Text style={styles.actualizar}>   Crear</Text>
+        </View>
          
         </Pressable>
         )}
         
-        <Pressable
-        style={styles.goBack}
-        onPress={handlePress}
-      >
-        <Image
-          style={styles.pathLayout}
-          contentFit="cover"
-          source={require("../assets/go-back.png")}
-        />
-      </Pressable>
-
     </View>
   );
 };
 const styles = StyleSheet.create({
+
   otroActualizar: {
     marginLeft: -110, // Ajusta el valor de marginLeft para moverlo más a la izquierda
     borderRadius: Border.br_16xl,
@@ -177,7 +166,7 @@ const styles = StyleSheet.create({
   },
   
   actualizar: {
-    fontSize: 20,
+    fontSize: 22,
     lineHeight: 35,
     textAlign: "justify",
     width: 120,
@@ -193,10 +182,14 @@ const styles = StyleSheet.create({
   },
   
   actualizarParent: {
-    marginLeft: -90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
+    marginLeft: -70, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
     top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
   },
   
+  actualizarParent2: {
+    marginLeft: 100, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
+    top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
+  },
   actualizarLayout: {
     height: 59,
     width: 120,

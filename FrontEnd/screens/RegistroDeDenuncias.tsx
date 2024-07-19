@@ -254,7 +254,7 @@ const RegistroDedenuncias = () => {
       <View style={styles.inputsGroup}>
 
         <RNPickerSelect
-            placeholder={{ label: "Seleccionar Tipo...", value: null}}
+            placeholder={{ label: "Declaracion Jurada...", value: null}}
             items={[
               { label: "Acepto", value: "1" },
               { label: "Rechaza", value: "0" },
