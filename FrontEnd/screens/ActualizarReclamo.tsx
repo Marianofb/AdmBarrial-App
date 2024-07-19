@@ -174,11 +174,15 @@ const ActualizarReclamo = () => {
         />
       </View>
 
-      <Pressable style={styles.wishlistParent} onPress={handleSubmit}>
-        <View style={styles.wishlist}>
-          <Text style={styles.publicar}>Actualizar</Text>
+      <View style={styles.bottomActions}>
+          <Pressable
+            style={styles.publicarButton} // Adjust styles as needed for "Publicar"
+            onPress={handleSubmit}
+          >
+            <Text style={styles.publicarButtonText}>Actualizar</Text>
+          </Pressable>
         </View>
-      </Pressable>
+
     </View>
   );
 };
@@ -211,6 +215,23 @@ const pickerSelectStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+  bottomActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 20,
+  },
+  publicarButton: {
+    backgroundColor: '#1E90FF', // Adjust color for "Publicar"
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 5,
+  },
+  publicarButtonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   publicarServicioProfesional: {
     paddingBottom: 100,
     flex: 1,

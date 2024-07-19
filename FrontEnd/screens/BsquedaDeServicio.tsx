@@ -145,6 +145,34 @@ const BsquedaDeServicio = () => {
       </View>
 
       
+      {personal && (
+      <Pressable
+        style={[styles.coso_actualizar]}
+        onPress={() => navigation.navigate("ActualizarServicio")}
+      >
+        <View style={[styles.actualizar]}>
+          <Text style={styles.textoActualizar}>Actualizar</Text>
+        </View>
+      </Pressable>
+      )}
+
+      {vecino && (
+        <Pressable
+          style={[styles.coso_actualizar]}
+          onPress={() =>
+            navigation.navigate("PublicarServicio", {
+              nombre,
+              apellido,
+              vecino,
+              personal,
+            })
+          }
+        >
+          <View style={[styles.actualizar]}>
+              <Text style={styles.textoActualizar}>Publicar</Text>
+          </View>
+        </Pressable>
+      )}
 
       <Pressable
         style={styles.goBack}
@@ -156,35 +184,7 @@ const BsquedaDeServicio = () => {
           source={require("../assets/go-back.png")}
         />
       </Pressable>
-      
-      {personal && (
-      <Pressable
-        style={[styles.actualizarParent, styles.actualizarLayout]}
-        onPress={() => navigation.navigate("ActualizarServicio")}
-      >
-        <View style={[styles.otroActualizar, styles.actualizarLayout]}>
-          <Text style={styles.actualizar}>Cambiar Estado</Text>
-        </View>
-      </Pressable>
-      )}
 
-      {vecino && (
-        <Pressable
-          style={[styles.actualizarParent2, styles.actualizarLayout2]}
-          onPress={() =>
-            navigation.navigate("PublicarServicio", {
-              nombre,
-              apellido,
-              vecino,
-              personal,
-            })
-          }
-        >
-          <View style={[styles.otroActualizar, styles.actualizarLayout]}>
-              <Text style={styles.actualizar}>Publicar</Text>
-          </View>
-        </Pressable>
-      )}
     </View>
   );
 };
@@ -196,17 +196,18 @@ const styles = StyleSheet.create({
     height: 100,
     resizeMode: 'cover',
   },
-  otroActualizar: {
-    marginLeft: -85, // Ajusta el valor de marginLeft para moverlo más a la izquierda
-    borderRadius: Border.br_16xl,
+  actualizar: {
+    height: 59,
+    width: 120,
+    position: "absolute",
+    marginLeft: -120, // Ajusta el valor de marginLeft para moverlo más a la izquierda
+    borderRadius: 100,
     padding: Padding.p_base,
     backgroundColor: Color.colorBlack,
   },
   
-  actualizar: {
+  textoActualizar: {
     fontSize: 22,
-    lineHeight: 35,
-    textAlign: "justify",
     width: 120,
     height: 34,
     alignItems: "center",
@@ -214,35 +215,16 @@ const styles = StyleSheet.create({
     color: Color.colorWhite1,
     fontFamily: FontFamily.bodyMediumRegular,
     letterSpacing: 0,
-    position: "absolute",
-    top: 13, // Ajusta el valor de top según sea necesario
-    left: 15, // Ajusta el valor de left para mover el texto más a la izquierda
+    top: "3%", // Ajusta el valor de top según sea necesario
   },
   
-  actualizarParent: {
-    marginLeft: -90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
-    top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
-  },
-
-  actualizarParent2: {
-    marginLeft: 90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
-    top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
-  },
-  
-  actualizarLayout: {
+  coso_actualizar: {
+    top: "88%", // Ajusta el valor de top para desplazarlo hacia abajo
     height: 59,
     width: 120,
     left: "45%", // Mantén centrado horizontalmente
     position: "absolute",
   },
-
-  actualizarLayout2: {
-    height: 59,
-    width: 120,
-    right: "15%", // Mantén centrado horizontalmente
-    position: "absolute",
-  },
-  
   container1: {
     top: 314,
     width: 343,
@@ -603,8 +585,8 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   goBack: {
-    left: 149,
-    top: 755,
+    left: "73%",
+    top: "87%",
     width: 74,
     height: 77,
     position: "absolute",

@@ -6,9 +6,9 @@ import { useNavigation, ParamListBase, useRoute, RouteProp  } from "@react-navig
 import { Color, Padding, FontSize, FontFamily, Border } from "../GlobalStyles";
 
 type RouteParams = {
-  documentoUsuario: string;
-  nombre: string;
-  apellido: string;
+  documentoUsuario: string
+  nombre: string
+  apellido: string
   vecino: boolean
   personal: boolean
 };
@@ -16,43 +16,49 @@ type RouteParams = {
 // Definir el tipo de la ruta con los parámetros especificados
 type PantallasRouteProp = RouteProp<Record<string, RouteParams>, string>;
 
-const MenuPrincipal_Personal = () => {
+const MenuPrincipal_Vecino = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const route = useRoute<PantallasRouteProp>(); // Usar el tipo MenuPrincipalRouteProp para route
-  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "", nombre: '', apellido: '', vecino: false , personal: false};
+  const { documentoUsuario, nombre, apellido, vecino, personal } = route.params || { documentoUsuario: "" , nombre: '', apellido: '', vecino: false, personal: false };
 
   //console.log("MENU PRINCIPAL Nombre: ", nombre, " / Apellido: ", apellido)
-  //console.log("MENU PRINCIPAL Vecino: ", vecino, " / Apellido: ", personal)
+  //console.log("MENU PRINCIPAL Vecino: ", vecino, " / Personal: ", personal)
 
   return (
     <View style={styles.menuPrincipal}>
-      <View style={[styles.menuPrincipalChild, styles.menuPosition]} />
       <Text style={styles.menPrincipal}>Menú de Inspector</Text>
       <Pressable
-        style={[styles.wishlistParent, styles.wishlistLayout]}
+        style={[styles.fondoSalir, styles.wishlistLayout]}
         onPress={() => navigation.navigate("Principal")}
       >
         <View style={[styles.wishlist, styles.wishlistLayout]}>
-          <Text style={styles.salir}>Salir</Text>
+          <View style={styles.icons}>
+            <View style={styles.cart}>
+              <Image
+                style={styles.iconLayout}
+                contentFit="cover"
+                source={require("../assets/home1.png")}
+              />
+            </View>
+            <View style={[styles.home, styles.homeSpaceBlock]}>
+              <Image
+                style={styles.iconLayout}
+                contentFit="cover"
+                source={require("../assets/heart.png")}
+              />
+            </View>
+            <View style={[styles.account, styles.homeSpaceBlock]}>
+              <Image
+                style={[styles.userIcon, styles.iconLayout]}
+                contentFit="cover"
+                source={require("../assets/user.png")}
+              />
+            </View>
+          </View>
         </View>
+        <Text style={styles.textoSalir}>Salir</Text>
       </Pressable>
-      <Image
-        style={[styles.image4Icon, styles.image7Layout]}
-        contentFit="cover"
-        source={require("../assets/image-4.png")}
-      />
-      <Image
-        style={styles.image5Icon}
-        contentFit="cover"
-        source={require("../assets/image-5.png")}
-      />
-      <Image
-        style={styles.image6Icon}
-        contentFit="cover"
-        source={require("../assets/image-6.png")}
-      />
-      <View style={styles.menuPosition} />
       <Image
         style={[styles.image10Icon]}
         contentFit="cover"
@@ -60,6 +66,8 @@ const MenuPrincipal_Personal = () => {
       />
       <Text style={styles.bienvenido}>{`¡Bienvenido!`}</Text>
       <Text style={styles.nombreApellido}>{`${nombre} ${apellido}`}</Text>
+
+      <View style={styles.barraPosition} />
       <View style={styles.image9Parent}>
         <Pressable
           style={[styles.image9, styles.imagePosition]}
@@ -76,7 +84,7 @@ const MenuPrincipal_Personal = () => {
             source={require("../assets/image-9.png")}
           />
         </Pressable>
-        <Text style={styles.serviciospromociones}>Servicios/Promociones</Text>
+        <Text style={styles.textoBarraServicios}>Servicios</Text>
       </View>
       <View style={styles.image8Parent}>
         <Pressable
@@ -94,7 +102,7 @@ const MenuPrincipal_Personal = () => {
             source={require("../assets/image-8.png")}
           />
         </Pressable>
-        <Text style={[styles.reclamos, styles.reclamosFlexBox]}>Reclamos</Text>
+        <Text style={[styles.textoBarra]}>Reclamos</Text>
       </View>
       <View style={[styles.image7Parent, styles.image7Layout]}>
         <Pressable
@@ -112,7 +120,7 @@ const MenuPrincipal_Personal = () => {
             source={require("../assets/image-4.png")}
           />
         </Pressable>
-        <Text style={[styles.denuncias, styles.reclamosFlexBox]}>
+        <Text style={[styles.textoBarra]}>
           Denuncias
         </Text>
       </View>
@@ -124,9 +132,9 @@ const styles = StyleSheet.create({
 
   menuPrincipal: {
     flex: 1,
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
   },
   // Ajusta el estilo de image-10 según sea necesario
   image10Icon: {
@@ -146,12 +154,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  menuPosition: {
-    height: 95,
-    width: 375,
+  barraPosition: {
+    height: "100%",
+    width: "100%",
     backgroundColor: Color.colorBlack,
     left: 0,
-    top: 753,
+    top: "88%",
     position: "absolute",
   },
   wishlistLayout: {
@@ -173,6 +181,11 @@ const styles = StyleSheet.create({
     height: 84,
     width: 100,
     position: "absolute",
+  },
+  image7Parent: {
+    top: "90%",
+    left: 25,
+    width: 100,
   },
   imagePosition: {
     height: 76,
@@ -321,24 +334,17 @@ const styles = StyleSheet.create({
     top: 0,
     backgroundColor: Color.colorBlack,
   },
-  salir: {
-    top: 13,
-    left: 55,
-    fontSize: 23,
-    lineHeight: 35,
-    textAlign: "justify",
-    width: 82,
-    height: 34,
-    alignItems: "center",
-    display: "flex",
+  textoSalir: {
+    top: "25%",
+    fontSize: 25,
+    textAlign: "center",
     color: Color.colorWhite1,
     fontFamily: FontFamily.bodyMediumRegular,
     letterSpacing: 0,
-    position: "absolute",
   },
-  wishlistParent: {
+  fondoSalir: {
     marginLeft: -79.5,
-    top: 625,
+    top: "75%",
   },
   image4Icon: {
     left: 25,
@@ -367,24 +373,22 @@ const styles = StyleSheet.create({
     left: 12,
     width: 89,
   },
-  serviciospromociones: {
-    top: 68,
-    height: 14,
-    justifyContent: "center",
-    lineHeight: 14,
+  textoBarraServicios: {
+    top: "-20%",
+    left: "25%",
     fontSize: FontSize.size_4xs,
-    width: 114,
-    alignItems: "center",
-    display: "flex",
     color: Color.colorWhite1,
     fontFamily: FontFamily.bodyMediumRegular,
-    textAlign: "center",
-    letterSpacing: 0,
-    left: 0,
-    position: "absolute",
+  },
+  textoBarra: {
+    top: "-10%",
+    left: "25%",
+    fontSize: FontSize.size_4xs,
+    color: Color.colorWhite1,
+    fontFamily: FontFamily.bodyMediumRegular,
   },
   image9Parent: {
-    top: 760,
+    top: "91%",
     left: 254,
     height: 82,
     width: 114,
@@ -400,7 +404,7 @@ const styles = StyleSheet.create({
     width: 71,
   },
   image8Parent: {
-    top: 755,
+    top: "90%",
     left: 141,
     height: 85,
     width: 94,
@@ -415,11 +419,6 @@ const styles = StyleSheet.create({
     width: 78,
     left: 0,
   },
-  image7Parent: {
-    top: 756,
-    left: 25,
-    width: 100,
-  },
 });
 
-export default MenuPrincipal_Personal;
+export default MenuPrincipal_Vecino;

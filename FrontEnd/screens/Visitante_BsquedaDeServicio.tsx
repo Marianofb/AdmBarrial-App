@@ -143,19 +143,6 @@ const Visitante_BsquedaDeServicio = () => {
         </ScrollView>
         </View>
       </View>
-
-      
-
-      <Pressable
-        style={styles.goBack}
-        onPress={handlePress}
-      >
-        <Image
-          style={styles.pathLayout}
-          contentFit="cover"
-          source={require("../assets/go-back.png")}
-        />
-      </Pressable>
       
     </View>
   );

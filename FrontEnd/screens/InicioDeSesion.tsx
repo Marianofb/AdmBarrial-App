@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Pressable, TextInput, Alert, TouchableOpacity  } from "react-native";
+import { StyleSheet, View, Text, Pressable, TextInput, Alert, TouchableOpacity, Dimensions  } from "react-native";
 import { Image } from "expo-image";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
@@ -7,6 +7,8 @@ import { Color, FontFamily, FontSize, Padding, Border } from "../GlobalStyles";
 
 import CONFIG from "../config.json"
 const URL_BASE = CONFIG.BASE_URL
+
+const { width, height } = Dimensions.get('window');
 
 const InicioDeSesion = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -25,6 +27,8 @@ const InicioDeSesion = () => {
     setContraseñaVisible(!contraseñaVisible);
   };
 
+  console.log("With: ", width, " // Height: ", height)
+  
   // Función para iniciar sesión
   const login = async () => {
     try {
@@ -93,22 +97,16 @@ const InicioDeSesion = () => {
   return (
     <View style={styles.inicioDeSesin}>
 
-      <Text style={[styles.title, styles.titleFlexBox]}>Iniciar sesión</Text>
+      <Text style={styles.title}>Iniciar sesión</Text>
       
       <View style={[styles.inicioDeSesinInner, styles.sesinPosition]}>
         <View>
           <View style={styles.frameContainer}>
-            <View>
               <View style={styles.inputsBorder}>
                 <View style={styles.eyeParent}>
-                  <Image
-                    style={styles.eyeIconLayout}
-                    contentFit="cover"
-                    source={require("../assets/eye.png")}
-                  />
                   <TextInput
                     style={[styles.placeholder, styles.textTypo]}
-                    placeholder="Documento"
+                    placeholder="Documento         "
                     value={documento}
                     onChangeText={setDocumento}
                   />
@@ -128,7 +126,7 @@ const InicioDeSesion = () => {
                   />
                   <TextInput
                     style={[styles.placeholder, styles.textTypo]}
-                    placeholder="Contraseña"
+                    placeholder="Contraseña   "
                     secureTextEntry = {!contraseñaVisible}
                     value={contraseña}
                     onChangeText={setContrasena}
@@ -142,12 +140,11 @@ const InicioDeSesion = () => {
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
         </View>
       </View>
     
       <Pressable
-        style={styles.inputs2}
+        style={styles.ingresar}
         onPress={login}
       >
         <View style={styles.button}>
@@ -157,7 +154,7 @@ const InicioDeSesion = () => {
 
       
       <Pressable
-        style={styles.inputs3}
+        style={styles.visitante}
          onPress={() => navigation.navigate("MenuPrincipal_Visitante")}
       >
         <View style={styles.button2}>
@@ -171,10 +168,7 @@ const InicioDeSesion = () => {
         onPress={() => navigation.navigate("CambiarContraseña")}
       >
         <Text style={[styles.text, styles.textTypo]}>
-          <Text style={styles.text1}>{` `}</Text>
-          <Text style={styles.cambiar}>Cambiar</Text>
-          <Text style={styles.text1}>{` `}</Text>
-          <Text style={styles.cambiar}>contraseña</Text>
+          <Text style={styles.cambiar}> Cambiar Contraseña</Text>
         </Text>
       </Pressable>
 
@@ -184,11 +178,7 @@ const InicioDeSesion = () => {
         onPress={() => navigation.navigate("Vecino_GenerarClave")}
       >
         <Text style={[styles.text, styles.textTypo]}>
-          
-        <Text style={styles.text1}>{`   `}</Text>
-          <Text style={styles.cambiar}>¡ Registrate</Text>
-          <Text style={styles.text1}>{` `}</Text>
-          <Text style={styles.cambiar}>Aca !</Text>
+          <Text style={styles.cambiar}> ¡Registrate Aca! </Text>
         </Text>
       </Pressable>
 
@@ -201,12 +191,18 @@ const InicioDeSesion = () => {
 
 const styles = StyleSheet.create({
   pressable: {
-    marginBottom: 16,
+    marginBottom: "4%",
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  textTypo: {
+    lineHeight: 25,
+    fontFamily: FontFamily.bodyMediumRegular,
+    fontSize: FontSize.body1422_size,
+    letterSpacing: 0,
   },
   button2: {
     width: 225, // Cambia este valor según el tamaño deseado
@@ -216,24 +212,11 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Ajusta este valor según tu necesidad
     backgroundColor: 'black', // Ajusta este valor según tu necesidad
   },
-  inputs3: {
-    flexDirection: 'row',
-    position: 'absolute',
-    top: 550, // Ajusta este valor según tu necesidad
-    alignSelf: 'center', // Esto centrará el botón horizontalmente
-  },
   cta: {
     color: 'white', // Ajusta este valor según tu necesidad
   },
   ctaTypo: {
     fontSize: 16, // Ajusta este valor según tu necesidad
-  },
-
-  iosPosition: {
-    width: 375,
-    left: 0,
-    position: "absolute",
-    backgroundColor: Color.colorWhite1,
   },
   titleTypo: {
     fontFamily: FontFamily.headingsH3,
@@ -243,15 +226,21 @@ const styles = StyleSheet.create({
     fontSize: FontSize.headingsH3_size,
     color: Color.colorBlack,
   },
+  ingresar: {
+    top: "10%",
+  },
+  visitante: {
+    top: "12%", // Ajusta este valor según tu necesidad
+  },
+  cambiarContrasea: {
+    top: "73%",
+  },
+  gnrarClave: {
+    top: "90%",
+  },
   sesinPosition: {
     left: "50%",
     position: "absolute",
-  },
-  textTypo: {
-    lineHeight: 25,
-    fontFamily: FontFamily.bodyMediumRegular,
-    fontSize: FontSize.body1422_size,
-    letterSpacing: 0,
   },
   eyeIconLayout: {
     display: "none",
@@ -268,9 +257,11 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     backgroundColor: Color.colorWhite1,
   },
-  titleFlexBox: {
-    textAlign: "left",
-    position: "absolute",
+  title: {
+    top: "-30%",
+    fontFamily: FontFamily.headingsH3,
+    fontSize: FontSize.headingsH3_size,
+    color: Color.colorBlack,
   },
   timeLayout: {
     lineHeight: 20,
@@ -407,53 +398,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorBlack,
   },
 
-  inputs2: {
-    top: 464,
-    left: 16,
-    flexDirection: "row",
-    position: "absolute",
-  },
-
-  title: {
-    width: "87.2%",
-    top: "8.25%",
-    left: "4.27%",
-    fontFamily: FontFamily.headingsH3,
-    fontWeight: "700",
-    lineHeight: 42,
-    letterSpacing: -0.6,
-    fontSize: FontSize.headingsH3_size,
-    color: Color.colorBlack,
-  },
-  homeIndicator: {
-    marginLeft: -66.5,
-    bottom: 8,
-    borderRadius: Border.br_81xl,
-    width: 134,
-    height: 5,
-    backgroundColor: Color.colorBlack,
-  },
-  ios1: {
-    top: 778,
-    height: 34,
-  },
-  noTieneCuenta1: {
-    color: Color.colorDarkgray,
-    letterSpacing: 0,
-  },
-  noTieneCuenta: {
-    fontFamily: FontFamily.bodyMediumRegular,
-  },
-  registrarse1: {
-    color: Color.colorBlack,
-  },
-  noTieneCuentaContainer: {
-    marginLeft: -99.5,
-    top: 557,
-    fontSize: FontSize.body1422_size,
-    textAlign: "left",
-    left: "50%",
-  },
   text1: {
     color: Color.colorDarkgray,
      fontWeight: 'bold'
@@ -465,12 +409,6 @@ const styles = StyleSheet.create({
     marginLeft: -71.5,
     fontFamily: FontFamily.bodyMediumRegular,
     textAlign: "center",
-  },
-  cambiarContrasea: {
-    top: 650,
-  },
-  gnrarClave: {
-    top: 800,
   },
   inicioDeSesin: {
     flex: 1,

@@ -18,10 +18,9 @@ const MenuPrincipal_Visitante = () => {
 
   return (
     <View style={styles.menuPrincipal}>
-      <View style={[styles.menuPrincipalChild, styles.menuPosition]} />
       <Text style={styles.menPrincipal}>Menú de Visitante</Text>
       <Pressable
-        style={[styles.wishlistParent, styles.wishlistLayout]}
+        style={[styles.fondoSalir, styles.wishlistLayout]}
         onPress={() => navigation.navigate("Principal")}
       >
         <View style={[styles.wishlist, styles.wishlistLayout]}>
@@ -49,24 +48,8 @@ const MenuPrincipal_Visitante = () => {
             </View>
           </View>
         </View>
-        <Text style={styles.salir}>Salir</Text>
+        <Text style={styles.textoSalir}>Salir</Text>
       </Pressable>
-      <Image
-        style={[styles.image4Icon, styles.image7Layout]}
-        contentFit="cover"
-        source={require("../assets/image-4.png")}
-      />
-      <Image
-        style={styles.image5Icon}
-        contentFit="cover"
-        source={require("../assets/image-5.png")}
-      />
-      <Image
-        style={styles.image6Icon}
-        contentFit="cover"
-        source={require("../assets/image-6.png")}
-      />
-      <View style={styles.menuPosition} />
       <Image
         style={[styles.image10Icon]}
         contentFit="cover"
@@ -75,20 +58,20 @@ const MenuPrincipal_Visitante = () => {
       <Text style={styles.bienvenido}>{`¡Bienvenido!`}</Text>
       <Text style={styles.nombreApellido}>{`Incognito`}</Text>
 
-      <View style={styles.image8Parent}>
-        <Pressable
-          style={[styles.image8, styles.imagePosition]}
-          onPress={() => navigation.navigate("Visitante_BsquedaDeServicio")}
-        >
-          <Image
-            style={styles.icon}
-            contentFit="cover"
-            source={require("../assets/image-9.png")}
-          />
-        </Pressable>
-        <Text style={styles.serviciospromociones}>Servicios/Promociones</Text>
-        
-      </View>
+      <View style={styles.barraPosition} />
+          <View style={styles.imagenServiciosPromociones}>
+            <Pressable
+              style={[styles.image8, styles.imagePosition]}
+              onPress={() => navigation.navigate("Visitante_BsquedaDeServicio")}
+            >
+              <Image
+                style={styles.icon}
+                contentFit="cover"
+                source={require("../assets/image-9.png")}
+              />
+            </Pressable>
+            <Text style={styles.textoServiciospromociones}>Servicios/Promociones</Text>
+          </View>
     </View>
   );
 };
@@ -118,14 +101,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-
-  menuPosition: {
-    height: 95,
-    width: 375,
+  barraPosition: {
+    height: "100%",
+    width: "100%",
     backgroundColor: Color.colorBlack,
     left: 0,
-    top: 753,
+    top: "88%",
     position: "absolute",
+  },
+  imagenServiciosPromociones: {
+    top: "91%",
+    height: "10%",
+    width: "27%",
+    position: "absolute",
+  },
+  textoServiciospromociones: {
+    top: "-20%",
+    fontSize: FontSize.size_4xs,
+    color: Color.colorWhite1,
+    fontFamily: FontFamily.bodyMediumRegular,
   },
   wishlistLayout: {
     height: 59,
@@ -148,8 +142,8 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   imagePosition: {
-    height: 76,
-    top: 0,
+    height: "100%",
+    top: "0%",
     position: "absolute",
   },
   reclamosFlexBox: {
@@ -294,24 +288,17 @@ const styles = StyleSheet.create({
     top: 0,
     backgroundColor: Color.colorBlack,
   },
-  salir: {
-    top: 13,
-    left: 55,
-    fontSize: 23,
-    lineHeight: 35,
-    textAlign: "justify",
-    width: 82,
-    height: 34,
-    alignItems: "center",
-    display: "flex",
+  textoSalir: {
+    top: "25%",
+    fontSize: 25,
+    textAlign: "center",
     color: Color.colorWhite1,
     fontFamily: FontFamily.bodyMediumRegular,
     letterSpacing: 0,
-    position: "absolute",
   },
-  wishlistParent: {
+  fondoSalir: {
     marginLeft: -79.5,
-    top: 625,
+    top: "75%",
   },
   image4Icon: {
     left: 25,
@@ -340,22 +327,6 @@ const styles = StyleSheet.create({
     left: 12,
     width: 89,
   },
-  serviciospromociones: {
-    top: 68,
-    height: 14,
-    justifyContent: "center",
-    lineHeight: 14,
-    fontSize: FontSize.size_4xs,
-    width: 114,
-    alignItems: "center",
-    display: "flex",
-    color: Color.colorWhite1,
-    fontFamily: FontFamily.bodyMediumRegular,
-    textAlign: "center",
-    letterSpacing: 0,
-    left: 0,
-    position: "absolute",
-  },
   image9Parent: {
     top: 760,
     left: 254,
@@ -364,20 +335,12 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   image8: {
-    width: 94,
-    left: 0,
+    width: "100%",
   },
   reclamos: {
     top: 72,
     left: 13,
     width: 71,
-  },
-  image8Parent: {
-    top: 755,
-    left: 141,
-    height: 85,
-    width: 94,
-    position: "absolute",
   },
   image7: {
     top: 0,

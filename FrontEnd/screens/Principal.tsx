@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Image } from "expo-image";
-import { StyleSheet, View, Text, Pressable, Dimensions } from "react-native";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";

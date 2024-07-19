@@ -120,30 +120,19 @@ const ConsultaDeReclamo = () => {
         onPress={() => navigation.navigate("AcualizarReclamo", { documentoUsuario, nombre, apellido, vecino, personal })}
       >
         <View style={[styles.otroActualizar, styles.actualizarLayout]}>
-          <Text style={styles.actualizar}>Cambiar Estado</Text>
+          <Text style={styles.actualizar}>Actualizar</Text>
         </View>
       </Pressable>
       )}
 
       <Pressable
-        style={styles.goBack}
-        onPress={handlePress}
+        style={[styles.actualizarParent2, styles.actualizarLayout]}
+        onPress={() => navigation.navigate("GenerarReclamo", { documentoUsuario, nombre, apellido, vecino, personal })}
       >
-        <Image
-          style={styles.pathLayout}
-          contentFit="cover"
-          source={require("../assets/go-back.png")}
-        />
-      </Pressable>
-
-      <Pressable
-       onPress={() => navigation.navigate("GenerarReclamo", { documentoUsuario, nombre, apellido, vecino, personal })}
-      >
-        <Image
-          style={styles.addIcon}
-          contentFit="cover"
-          source={require("../assets/add.png")}
-        />
+        <View style={[styles.otroActualizar, styles.actualizarLayout]}>
+          <Text style={styles.actualizar}>   Crear</Text>
+        </View>
+        
         </Pressable>
     </View>
   );
@@ -174,10 +163,16 @@ const styles = StyleSheet.create({
   },
   
   actualizarParent: {
-    marginLeft: -90, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
+    marginLeft: -70, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
     top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
   },
   
+  actualizarParent2: {
+    marginLeft: 100, // Ajusta el valor de marginLeft para mover el Pressable más a la izquierda
+    top: 675, // Ajusta el valor de top para desplazarlo hacia abajo
+  },
+  
+
   actualizarLayout: {
     height: 59,
     width: 120,
@@ -197,6 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   servicioContainer: {
+    flexDirection: "column",
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#ccc",
