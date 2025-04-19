@@ -1,4 +1,4 @@
-# 🏘️ AdmBarrial_App
+# 🏘️ AdmBarrial-App
 
 **AdmBarrial_App** es una aplicación **full-stack** para la gestión de barrios y comunidades vecinales.  
 Permite registrar y gestionar vecinos, reclamos, denuncias, sitios, servicios y movimientos administrativos.  
