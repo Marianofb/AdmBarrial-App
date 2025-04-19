@@ -25,11 +25,6 @@ Desarrollada con un **frontend móvil en React Native (Expo)** y un **backend en
 
 ---
 
-## 📁 Estructura del Proyecto
-AdmBarrial_App/ ├── Frontend/ │ ├── assets/ │ ├── components/ │ ├── navigation/ │ ├── screens/ │ ├── config.json │ ├── app.json │ ├── package.json │ └── ... │ ├── Backend/ │ ├── config.py │ ├── main.py │ ├── models.py │ ├── routes/ (pendiente de agregar) │ └── ... └── README.md
-
----
-
 ## 🚀 Cómo ejecutar el proyecto
 
 ### 🔹 Frontend (React Native con Expo)
